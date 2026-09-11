@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Manrope', 'Inter', sans-serif;
+    --font-serif: 'Cormorant Garamond', 'Playfair Display', serif;
+    --font-display: 'Anton', 'Oswald', sans-serif;
+    --font-syne: 'Syne', sans-serif;
+  }
+
+  body {
+    background-color: #020813;
+    color: #ededed;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom Typography Helpers */
+.font-display {
+  font-family: 'Anton', 'Oswald', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-condensed {
+  font-family: 'Oswald', 'Anton', sans-serif;
+}
+
+.font-serif-editorial {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+/* Atmospheric Water Texture Overlay */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Smooth custom scrollbars in Aqua */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #020813;
+}
+::-webkit-scrollbar-thumb {
+  background: #0e2238;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+  box-shadow: 0 0 10px #00f0ff;
+}
+
+/* Text Mask Revealer Utilities */
+.mask-reveal {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.mask-hidden {
+  clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+}
+
+/* Cinematic Glowing Aqua Accents */
+.glow-aqua {
+  box-shadow: 0 0 50px -10px rgba(0, 240, 255, 0.45);
+}
+
+.glow-aqua-subtle {
+  box-shadow: 0 0 80px -20px rgba(0, 229, 255, 0.22);
+}
+
+.glow-aqua-intense {
+  box-shadow: 0 0 60px -5px rgba(0, 240, 255, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+/* Compatibility aliases for previous glow classes */
+.glow-ember {
+  box-shadow: 0 0 50px -10px rgba(0, 240, 255, 0.45);
+}
+
+.glow-ember-subtle {
+  box-shadow: 0 0 80px -20px rgba(0, 229, 255, 0.22);
+}
+
+.text-stroke-subtle {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+  color: transparent;
+}
+
+.text-stroke-accent {
+  -webkit-text-stroke: 1.5px #00f0ff;
+  color: transparent;
+}
+
+/* Water Droplet and Splash Effects */
+@keyframes waterRipple {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.water-ripple-anim {
+  animation: waterRipple 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+/* Aqua Water Shimmer */
+@keyframes waterCaustics {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.75));
+  }
+}
+
+.animate-water-glow {
+  animation: waterCaustics 4s ease-in-out infinite;
+}
