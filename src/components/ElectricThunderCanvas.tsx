@@ -173,8 +173,15 @@ export const ElectricThunderCanvas: React.FC = () => {
     }, 12000);
 
     let animId: number;
+    let lastRenderTime = 0;
 
-    const render = () => {
+    const render = (currentTime: number) => {
+      const rawElapsed = lastRenderTime > 0 ? (currentTime - lastRenderTime) / 1000 : 0.016;
+      const elapsed = Math.max(0.001, Math.min(Number.isFinite(rawElapsed) ? rawElapsed : 0.016, 0.05));
+      lastRenderTime = currentTime;
+      // dt relative to 60fps baseline
+      const dt = elapsed * 60;
+
       ctx.clearRect(0, 0, width, height);
 
       // Render screen lightning flash
@@ -183,13 +190,13 @@ export const ElectricThunderCanvas: React.FC = () => {
         ctx.fillRect(0, 0, width, height);
         ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha * 0.3})`;
         ctx.fillRect(0, 0, width, height);
-        flashAlpha *= 0.82;
+        flashAlpha *= Math.pow(0.82, dt);
       }
 
       // Render lightning bolts
       for (let i = bolts.length - 1; i >= 0; i--) {
         const bolt = bolts[i];
-        const progress = bolt.life / bolt.maxLife;
+        const progress = Math.max(0, bolt.life / bolt.maxLife);
 
         // 1. Wide outer purple-cyan plasma halo
         ctx.save();
@@ -224,20 +231,21 @@ export const ElectricThunderCanvas: React.FC = () => {
         ctx.stroke();
         ctx.restore();
 
-        bolt.life--;
+        bolt.life -= dt;
         if (bolt.life <= 0) {
           bolts.splice(i, 1);
         }
       }
 
       // Render sparks
+      const sparkFriction = Math.pow(0.96, dt);
       for (let i = sparks.length - 1; i >= 0; i--) {
         const spark = sparks[i];
-        spark.x += spark.vx;
-        spark.y += spark.vy;
-        spark.vy += 0.18; // gravity
-        spark.vx *= 0.96; // air friction
-        spark.life--;
+        spark.x += spark.vx * dt;
+        spark.y += spark.vy * dt;
+        spark.vy += 0.18 * dt; // gravity
+        spark.vx *= sparkFriction; // air friction
+        spark.life -= dt;
 
         const alpha = Math.max(0, spark.life / spark.maxLife);
         ctx.save();
@@ -271,7 +279,8 @@ export const ElectricThunderCanvas: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden"
+      className="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden will-change-transform"
+      style={{ transform: 'translateZ(0)' }}
     />
   );
 };

@@ -12,7 +12,8 @@ import {
   ExternalLink,
   X,
   Code2,
-  Layers
+  Layers,
+  ArrowLeft,
 } from 'lucide-react';
 import { SKILLS } from '../data/portfolioData';
 import { SkillItem, GitWork } from '../types';
@@ -468,14 +469,27 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
               onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-white/20 bg-neutral-950 p-6 md:p-10 shadow-[0_20px_80px_rgba(0,0,0,0.8)]"
             >
-              {/* Close Button */}
-              <button
-                id="close-git-work-modal"
-                onClick={() => setInspectModalSkill(null)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-neutral-400 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Top Navigation Row */}
+              <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+                <button
+                  id="skills-modal-back-btn-top"
+                  onClick={() => setInspectModalSkill(null)}
+                  className="group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-[#00f0ff] hover:border-[#00f0ff] hover:text-black text-white text-xs font-mono font-bold tracking-wider transition-all duration-300 cursor-pointer"
+                  title="Back to Capabilities"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                  <span>BACK TO CAPABILITIES</span>
+                </button>
+
+                <button
+                  id="close-git-work-modal"
+                  onClick={() => setInspectModalSkill(null)}
+                  className="p-2 rounded-full bg-white/10 text-neutral-400 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
               {/* Modal Header */}
               <div className="mb-8">
@@ -596,6 +610,18 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
                     </a>
                   </div>
                 )}
+              </div>
+
+              {/* Prominent Bottom Back Option */}
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <button
+                  id="skills-modal-back-btn-bottom"
+                  onClick={() => setInspectModalSkill(null)}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-white/20 bg-white/5 hover:bg-white hover:text-black text-neutral-300 font-mono text-xs uppercase font-bold tracking-wider transition-all duration-300 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>BACK TO CAPABILITIES</span>
+                </button>
               </div>
             </motion.div>
           </div>

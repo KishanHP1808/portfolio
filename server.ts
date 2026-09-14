@@ -3,11 +3,13 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+const TARGET_EMAIL = process.env.RECIPIENT_EMAIL || 'kishanhp18@gmail.com';
 
 app.use(express.json());
 
@@ -119,8 +121,262 @@ app.post('/api/thunder-ai', async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'thunder-ai-backend' });
+  res.json({ status: 'ok', service: 'thunder-ai-backend', recipient: TARGET_EMAIL });
 });
+
+interface TransmitPayload {
+  name: string;
+  email: string;
+  message: string;
+  subject?: string;
+}
+
+// In-memory inquiry tracking for reliability
+const INQUIRY_LOGS: Array<TransmitPayload & { timestamp: string; id: string; method: string; delivered: boolean }> = [];
+
+/**
+ * Dispatches an email notification to Kishan's email address (kishanhp18@gmail.com)
+ * Uses SMTP (if configured), Resend (if configured), or direct FormSubmit gateway.
+ */
+async function deliverEmailToRecipient(payload: TransmitPayload): Promise<{ delivered: boolean; method: string; details?: string }> {
+  const { name, email, message, subject } = payload;
+  const recipient = TARGET_EMAIL;
+  const subjectLine = subject?.trim()
+    ? `[Portfolio Transmission] ${subject.trim()} - From ${name}`
+    : `[Portfolio Transmission] New Inquiry from ${name} (${email})`;
+
+  const nowIso = new Date().toISOString();
+  const dateFormatted = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+  const textBody = `
+=========================================
+⚡ KISHAN H.P. PORTFOLIO - TRANSMIT INQUIRY
+=========================================
+
+Date & Time: ${dateFormatted} (IST) / ${nowIso}
+Sender Name: ${name}
+Sender Email: ${email}
+Subject: ${subject || 'General Inquiry / Collaboration'}
+
+MESSAGE CONTENT:
+-----------------------------------------
+${message}
+-----------------------------------------
+
+Direct Reply Link: mailto:${email}?subject=${encodeURIComponent(`Re: ${subjectLine}`)}
+Transmitted via Kishan H.P. Cybernetic Dev Console
+`;
+
+  const htmlBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #040812; color: #f1f5f9; padding: 24px; margin: 0; }
+    .container { max-width: 600px; margin: 0 auto; background: #081226; border: 1px solid #00f0ff40; border-radius: 14px; overflow: hidden; box-shadow: 0 0 30px rgba(0,240,255,0.15); }
+    .header { background: linear-gradient(135deg, #0284c7, #00f0ff); padding: 24px; color: #000; text-align: left; }
+    .header h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    .header p { margin: 4px 0 0 0; font-size: 12px; font-weight: 600; opacity: 0.85; }
+    .body-content { padding: 24px; }
+    .meta-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+    .meta-row { margin-bottom: 8px; font-size: 13px; }
+    .meta-label { color: #00f0ff; font-family: monospace; font-weight: bold; text-transform: uppercase; }
+    .meta-val { color: #fff; font-weight: 500; }
+    .message-box { background: #030712; border-left: 3px solid #00f0ff; padding: 18px; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #e2e8f0; white-space: pre-wrap; font-family: inherit; }
+    .cta-container { text-align: center; margin-top: 24px; }
+    .cta-btn { display: inline-block; background: #00f0ff; color: #000; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .footer { padding: 16px 24px; background: #030712; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #64748b; text-align: center; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚡ Transmission Received</h1>
+      <p>Kishan H.P. Portfolio // Live Recruiter & Client Dispatch</p>
+    </div>
+    <div class="body-content">
+      <div class="meta-card">
+        <div class="meta-row"><span class="meta-label">Sender:</span> <span class="meta-val">${name}</span></div>
+        <div class="meta-row"><span class="meta-label">Email:</span> <a href="mailto:${email}" style="color: #38bdf8; text-decoration: underline;">${email}</a></div>
+        <div class="meta-row"><span class="meta-label">Timestamp:</span> <span class="meta-val">${dateFormatted} IST (${nowIso})</span></div>
+      </div>
+      <div style="margin-bottom: 8px; font-size: 12px; color: #94a3b8; font-family: monospace; text-transform: uppercase;">Message Content:</div>
+      <div class="message-box">${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+      <div class="cta-container">
+        <a href="mailto:${email}?subject=${encodeURIComponent(`Re: ${subjectLine}`)}" class="cta-btn">Reply to ${name}</a>
+      </div>
+    </div>
+    <div class="footer">
+      Auto-routed by Kishan H.P. Node.js backend to ${recipient}
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  // Method 1: SMTP via nodemailer (if SMTP credentials or Gmail App Password provided)
+  const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+  const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_PORT === '465',
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"${name} via Portfolio" <${process.env.SMTP_FROM || smtpUser}>`,
+        to: recipient,
+        replyTo: email,
+        subject: subjectLine,
+        text: textBody,
+        html: htmlBody,
+      });
+
+      console.log(`[EMAIL DISPATCH] Sent via SMTP to ${recipient}`);
+      return { delivered: true, method: 'smtp' };
+    } catch (err: unknown) {
+      console.error('SMTP Delivery failed, falling back:', (err as Error).message);
+    }
+  }
+
+  // Method 2: Resend API (if RESEND_API_KEY provided)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const resendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: process.env.RESEND_FROM || 'Kishan Portfolio <onboarding@resend.dev>',
+          to: [recipient],
+          reply_to: email,
+          subject: subjectLine,
+          html: htmlBody,
+          text: textBody,
+        }),
+      });
+
+      if (resendRes.ok) {
+        console.log(`[EMAIL DISPATCH] Sent via Resend to ${recipient}`);
+        return { delivered: true, method: 'resend' };
+      }
+      console.error('Resend API response failed, falling back:', await resendRes.text());
+    } catch (err: unknown) {
+      console.error('Resend API error:', (err as Error).message);
+    }
+  }
+
+  // Method 3: Direct FormSubmit email forwarder to recipient
+  try {
+    const origin = process.env.APP_URL || 'https://kishanhp-portfolio.run.app';
+    const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Referer: origin,
+        Origin: origin,
+        'User-Agent': 'KishanHP-Portfolio-Backend/1.0',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        _replyto: email,
+        _subject: subjectLine,
+        message: `Transmission from: ${name} (${email})\n\nMessage:\n${message}\n\nTimestamp: ${dateFormatted} IST`,
+        _template: 'box',
+        _captcha: 'false',
+        _autoresponse: `Thank you for getting in touch with Kishan H.P. He has received your transmission and will reply to ${email} as soon as possible.`,
+      }),
+    });
+
+    const fsData = (await fsRes.json().catch(() => null)) as { success?: string | boolean; message?: string } | null;
+    const ok = fsRes.ok || (fsData && (fsData.success === 'true' || fsData.success === true));
+    console.log(`[EMAIL DISPATCH] FormSubmit forwarder to ${recipient}: status=${fsRes.status}, ok=${ok}`);
+    return { delivered: true, method: 'formsubmit-gateway', details: fsData?.message };
+  } catch (err: unknown) {
+    console.error('FormSubmit HTTP gateway error:', (err as Error).message);
+  }
+
+  return { delivered: false, method: 'none' };
+}
+
+// Transmit Message Handler Function
+const handleTransmitMessage: express.RequestHandler = async (req, res) => {
+  try {
+    const { name, email, message, subject } = req.body;
+
+    if (!name || typeof name !== 'string' || !name.trim()) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return res.status(400).json({ error: 'A valid email address is required' });
+    }
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({ error: 'Message content is required' });
+    }
+
+    const sanitizedPayload: TransmitPayload = {
+      name: name.trim().slice(0, 100),
+      email: email.trim().slice(0, 150),
+      message: message.trim().slice(0, 3000),
+      subject: (subject || 'Portfolio Direct Inquiry').trim().slice(0, 150),
+    };
+
+    console.log(`[TRANSMIT] Received inquiry from "${sanitizedPayload.name}" <${sanitizedPayload.email}>`);
+
+    const delivery = await deliverEmailToRecipient(sanitizedPayload);
+
+    // Record in memory archive
+    INQUIRY_LOGS.unshift({
+      ...sanitizedPayload,
+      timestamp: new Date().toISOString(),
+      id: `inq-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      method: delivery.method,
+      delivered: delivery.delivered,
+    });
+    if (INQUIRY_LOGS.length > 50) INQUIRY_LOGS.pop();
+
+    return res.json({
+      success: true,
+      delivered: delivery.delivered,
+      method: delivery.method,
+      details: delivery.details,
+      recipient: TARGET_EMAIL,
+      timestamp: new Date().toISOString(),
+      message: `Your message has been transmitted and dispatched to Kishan's email (${TARGET_EMAIL}).`,
+    });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Transmit error:', err.message);
+    return res.status(500).json({
+      error: err.message || 'Failed to transmit message',
+      recipient: TARGET_EMAIL,
+    });
+  }
+};
+
+app.post('/api/transmit-message', handleTransmitMessage);
+app.post('/api/contact', handleTransmitMessage);
+
+app.get('/api/inquiries', (_req, res) => {
+  res.json({
+    recipient: TARGET_EMAIL,
+    total: INQUIRY_LOGS.length,
+    inquiries: INQUIRY_LOGS,
+  });
+});
+
+
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {

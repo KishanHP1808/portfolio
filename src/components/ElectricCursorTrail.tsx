@@ -82,17 +82,27 @@ export const ElectricCursorTrail: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let animId: number;
+    let lastRenderTime = 0;
 
-    const render = () => {
+    const render = (currentTime: number) => {
+      // Calculate normalized delta-time relative to baseline 60fps (dt = 1.0 at 60fps, 0.333 at 180fps)
+      const rawElapsed = lastRenderTime > 0 ? (currentTime - lastRenderTime) / 1000 : 0.016;
+      const elapsed = Math.max(0.001, Math.min(Number.isFinite(rawElapsed) ? rawElapsed : 0.016, 0.05));
+      lastRenderTime = currentTime;
+      const dt = elapsed * 60;
+
       ctx.clearRect(0, 0, width, height);
+
+      // Scale friction and decay by dt for framerate independence
+      const friction = Math.pow(0.95, dt);
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx *= 0.95;
-        p.vy *= 0.95;
-        p.alpha -= p.decay;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= friction;
+        p.vy *= friction;
+        p.alpha -= p.decay * dt;
 
         if (p.alpha <= 0) {
           particles.splice(i, 1);
@@ -101,11 +111,11 @@ export const ElectricCursorTrail: React.FC = () => {
 
         ctx.save();
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
+        ctx.globalAlpha = Math.max(0, p.alpha);
         ctx.shadowColor = p.color;
         ctx.shadowBlur = 6;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.size * Math.max(0.2, p.alpha), 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
@@ -126,7 +136,8 @@ export const ElectricCursorTrail: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-45 select-none overflow-hidden"
+      className="fixed inset-0 pointer-events-none z-45 select-none overflow-hidden will-change-transform"
+      style={{ transform: 'translateZ(0)' }}
     />
   );
 };

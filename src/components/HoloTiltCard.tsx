@@ -1,5 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
-import { motion } from 'motion/react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 
 interface HoloTiltCardProps {
   children: React.ReactNode;
@@ -21,27 +20,41 @@ export const HoloTiltCard: React.FC<HoloTiltCardProps> = ({
   onMouseLeave,
 }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [coords, setCoords] = useState({ x: 50, y: 50 });
+  const sheenRef = useRef<HTMLDivElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [rotation, setRotation] = useState({ rx: 0, ry: 0 });
+  const rafId = useRef<number | null>(null);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const card = cardRef.current;
+      if (!card) return;
 
-      const px = Math.min(Math.max((x / rect.width) * 100, 0), 100);
-      const py = Math.min(Math.max((y / rect.height) * 100, 0), 100);
+      const clientX = e.clientX;
+      const clientY = e.clientY;
 
-      const rx = ((py - 50) / 50) * -tiltIntensity;
-      const ry = ((px - 50) / 50) * tiltIntensity;
+      if (rafId.current) cancelAnimationFrame(rafId.current);
 
-      setCoords({ x: px, y: py });
-      setRotation({ rx, ry });
+      rafId.current = requestAnimationFrame(() => {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const px = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+        const py = Math.min(Math.max((y / rect.height) * 100, 0), 100);
+
+        const rx = ((py - 50) / 50) * -tiltIntensity;
+        const ry = ((px - 50) / 50) * tiltIntensity;
+
+        card.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
+        card.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
+
+        if (sheenRef.current) {
+          sheenRef.current.style.background = `radial-gradient(circle 350px at ${px}% ${py}%, ${glowColor} 0%, rgba(112,0,255,0.12) 35%, transparent 75%)`;
+        }
+      });
     },
-    [tiltIntensity]
+    [tiltIntensity, glowColor]
   );
 
   const handleEnter = () => {
@@ -51,12 +64,22 @@ export const HoloTiltCard: React.FC<HoloTiltCardProps> = ({
 
   const handleLeave = () => {
     setIsHovered(false);
-    setRotation({ rx: 0, ry: 0 });
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    if (cardRef.current) {
+      cardRef.current.style.setProperty('--rx', '0deg');
+      cardRef.current.style.setProperty('--ry', '0deg');
+    }
     onMouseLeave?.();
   };
 
+  useEffect(() => {
+    return () => {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+  }, []);
+
   return (
-    <motion.div
+    <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleEnter}
@@ -65,26 +88,20 @@ export const HoloTiltCard: React.FC<HoloTiltCardProps> = ({
       style={{
         transformStyle: 'preserve-3d',
         perspective: '1000px',
+        transform: `perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(${isHovered ? 1.018 : 1}) translateZ(0)`,
+        transition: isHovered
+          ? 'transform 0.08s cubic-bezier(0.2, 0, 0.2, 1)'
+          : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
-      animate={{
-        rotateX: rotation.rx,
-        rotateY: rotation.ry,
-        scale: isHovered ? 1.018 : 1,
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 24,
-        mass: 0.5,
-      }}
-      className={`relative overflow-hidden group cursor-pointer ${className}`}
+      className={`relative overflow-hidden group cursor-pointer will-change-transform ${className}`}
     >
       {/* Dynamic Specular Holographic Sheen Layer */}
       <div
-        className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-300 mix-blend-screen"
+        ref={sheenRef}
+        className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-300 mix-blend-screen will-change-transform"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(circle 350px at ${coords.x}% ${coords.y}%, ${glowColor} 0%, rgba(112,0,255,0.12) 35%, transparent 75%)`,
+          background: `radial-gradient(circle 350px at 50% 50%, ${glowColor} 0%, rgba(112,0,255,0.12) 35%, transparent 75%)`,
         }}
       />
 
@@ -102,11 +119,11 @@ export const HoloTiltCard: React.FC<HoloTiltCardProps> = ({
         className="relative z-10 w-full h-full"
         style={{
           transform: isHovered ? 'translateZ(25px)' : 'translateZ(0px)',
-          transition: 'transform 0.3s ease-out',
+          transition: 'transform 0.25s cubic-bezier(0.2, 0, 0.2, 1)',
         }}
       >
         {children}
       </div>
-    </motion.div>
+    </div>
   );
 };

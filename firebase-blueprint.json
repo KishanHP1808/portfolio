@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "inquiry": {
+      "title": "Contact Inquiry",
+      "description": "Direct message or project inquiry submitted by a portfolio visitor",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Visitor or organization name"
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 150,
+          "description": "Visitor contact email"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Message or project inquiry body"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Submission ISO timestamp"
+        }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "project_like": {
+      "title": "Project Like",
+      "description": "Appreciation count for individual showcase projects",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Identifier of the portfolio project"
+        },
+        "likesCount": {
+          "type": "number",
+          "description": "Aggregate number of endorsements/likes"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["projectId", "likesCount", "updatedAt"]
+    },
+    "guestbook_entry": {
+      "title": "Guestbook Entry",
+      "description": "Public visitor note or endorsement for Kishan's portfolio",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Visitor name"
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Role or affiliation e.g. Recruiter, Designer, Engineer"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Note or feedback message"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Entry creation timestamp"
+        }
+      },
+      "required": ["name", "role", "message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/inquiries/{inquiryId}": {
+      "schema": "inquiry",
+      "description": "Collection of visitor inquiries and contact messages"
+    },
+    "/project_likes/{projectId}": {
+      "schema": "project_like",
+      "description": "Real-time appreciation reactions for showcase projects"
+    },
+    "/guestbook/{entryId}": {
+      "schema": "guestbook_entry",
+      "description": "Public endorsements and visitor guestbook notes"
+    }
+  }
+}

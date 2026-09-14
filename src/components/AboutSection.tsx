@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Sparkles, Code2, Compass, Layers, ShieldCheck, Camera, Palette, Film, Heart, ArrowUpRight } from 'lucide-react';
+import { MapPin, Sparkles, Code2, Compass, Layers, ShieldCheck, Camera, Palette, Film, Heart, ArrowUpRight, GraduationCap } from 'lucide-react';
 import { PERSONAL_INFO, FOCUS_AREAS, HOBBIES } from '../data/portfolioData';
 
 interface AboutSectionProps {
@@ -13,44 +13,57 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   onHoverEnd,
 }) => {
   return (
-    <section id="about" className="relative w-full py-28 md:py-36 px-6 md:px-12 lg:px-16 border-t border-white/10 select-none">
+    <section id="about" className="relative w-full py-16 sm:py-24 md:py-36 px-3.5 sm:px-6 md:px-12 lg:px-16 border-t border-white/10 select-none">
       <div className="max-w-[1700px] mx-auto">
         {/* Editorial Subheader */}
-        <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-4">
+        <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3 sm:mb-4">
           <Sparkles className="w-3.5 h-3.5" />
           <span>EDITORIAL MONOGRAPH</span>
         </div>
 
         {/* Section Heading */}
-        <div className="mb-16 md:mb-24">
-          <h2 className="font-display text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
+        <div className="mb-12 sm:mb-16 md:mb-24">
+          <h2 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
             ABOUT ME
           </h2>
         </div>
 
         {/* Large Statement and Asymmetrical Bio Presentation */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start mb-24 md:mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-20 items-start mb-16 sm:mb-24 md:mb-32">
           {/* Left: Giant Manifesto Quote */}
           <div className="lg:col-span-7">
-            <h3 className="font-serif-editorial text-3xl md:text-5xl lg:text-6xl text-white font-light italic leading-tight mb-8">
+            <h3 className="font-serif-editorial text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-light italic leading-tight mb-5 sm:mb-8">
               &ldquo;{PERSONAL_INFO.aboutHeadline}&rdquo;
             </h3>
 
-            <p className="text-neutral-300 text-lg md:text-xl leading-relaxed font-light mb-6">
+            <p className="text-neutral-300 text-base sm:text-lg md:text-xl leading-relaxed font-light mb-4 sm:mb-6">
               {PERSONAL_INFO.aboutDescription}
             </p>
 
-            <p className="text-neutral-400 text-base leading-relaxed">
+            <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
               Based in the heritage tech hub of Mysuru, Karnataka, Kishan approaches every interface as both a gallery installation and a precision tool. He rejects the compromise between visual grandeur and runtime velocity, ensuring every layout responds with sub-frame fluidness.
             </p>
 
-            {/* Geographical & Availability Pill */}
-            <div className="mt-8 flex flex-wrap items-center gap-4 text-xs font-mono">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.02]">
+            {/* Geographical, Academic & Availability Pill */}
+            <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-2 sm:gap-4 text-xs font-mono">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 bg-white/[0.02]">
                 <MapPin className="w-3.5 h-3.5 text-[#00f0ff]" />
                 <span className="text-neutral-300">{PERSONAL_INFO.location}</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-[#00f0ff]">
+              <a
+                href={PERSONAL_INFO.college.url}
+                target="_blank"
+                rel="noreferrer"
+                onMouseEnter={() => onHoverAction?.('COLLEGE')}
+                onMouseLeave={onHoverEnd}
+                className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 bg-white/[0.02] hover:border-[#00f0ff] hover:text-[#00f0ff] text-neutral-300 transition-colors max-w-full"
+                title="Maharaja Institute of Technology Tandavapura"
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" />
+                <span className="truncate">{PERSONAL_INFO.college.name}</span>
+                <ArrowUpRight className="w-3 h-3 opacity-60 shrink-0" />
+              </a>
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-[#00f0ff]">
                 <span className="w-2 h-2 rounded-full bg-[#00f0ff] animate-ping" />
                 <span>OPEN FOR SELECT OPPORTUNITIES</span>
               </div>
@@ -58,8 +71,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
           </div>
 
           {/* Right: Studio Discipline & Architectural Manifesto Card */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-neutral-950 p-8 shadow-2xl flex flex-col justify-between min-h-[460px]">
+          <div className="lg:col-span-5 w-full">
+            <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-neutral-950 p-5 sm:p-8 shadow-2xl flex flex-col justify-between min-h-[380px] sm:min-h-[460px]">
               {/* Background geometric accents */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff]/5 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />

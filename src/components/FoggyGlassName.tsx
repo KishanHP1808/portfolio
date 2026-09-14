@@ -136,24 +136,27 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
     // 3. Render 3D condensation water droplets
     const droplets = dropletsRef.current;
     for (const d of droplets) {
+      const rx = Math.max(0.1, Math.abs(d.radius));
+      const ry = Math.max(0.1, Math.abs(d.radius * (d.aspect || 1)));
+
       ctx.save();
       ctx.beginPath();
-      ctx.ellipse(d.x, d.y, d.radius, d.radius * d.aspect, 0, 0, Math.PI * 2);
+      ctx.ellipse(d.x, d.y, rx, ry, 0, 0, Math.PI * 2);
 
       // Droplet base
-      ctx.fillStyle = `rgba(180, 225, 240, ${d.opacity * 0.5})`;
+      ctx.fillStyle = `rgba(180, 225, 240, ${Math.max(0, d.opacity * 0.5)})`;
       ctx.fill();
 
       // Droplet shadow (bottom-right)
       ctx.beginPath();
-      ctx.ellipse(d.x + 0.8, d.y + 0.8, d.radius * 0.85, d.radius * d.aspect * 0.85, 0, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0, 10, 20, ${d.opacity * 0.6})`;
+      ctx.ellipse(d.x + 0.8, d.y + 0.8, Math.max(0.1, rx * 0.85), Math.max(0.1, ry * 0.85), 0, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 10, 20, ${Math.max(0, d.opacity * 0.6)})`;
       ctx.fill();
 
       // Droplet specular glint (top-left)
       ctx.beginPath();
-      ctx.ellipse(d.x - 0.7, d.y - 0.7, d.radius * 0.45, d.radius * d.aspect * 0.45, 0, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${d.opacity * 0.9})`;
+      ctx.ellipse(d.x - 0.7, d.y - 0.7, Math.max(0.1, rx * 0.45), Math.max(0.1, ry * 0.45), 0, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, d.opacity * 0.9)})`;
       ctx.fill();
 
       ctx.restore();
@@ -586,7 +589,7 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
     <div
       ref={containerRef}
       id="foggy-glass-name-container"
-      className="relative w-full rounded-3xl p-6 sm:p-8 md:p-12 bg-neutral-950/70 border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden select-none group"
+      className="relative w-full rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-10 lg:p-12 bg-neutral-950/70 border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden select-none group"
     >
       {/* Dynamic Storming Background with Thunder Effect & Falling Droplet Splash */}
       <StormDropletCanvas onThunderFlash={() => {
@@ -599,16 +602,16 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
       <div className="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
 
       {/* Recruiter / Hiring Header Status Bar */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10 text-xs font-mono">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 sm:gap-4 pb-3 sm:pb-6 border-b border-white/10 text-[10px] sm:text-xs font-mono">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
             <span
               className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                 percentCleared > 65 ? 'bg-emerald-400' : 'bg-[#00f0ff]'
               }`}
             />
             <span
-              className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+              className={`relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 ${
                 percentCleared > 65 ? 'bg-emerald-500' : 'bg-[#00f0ff]'
               }`}
             />
@@ -616,31 +619,37 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
 
           <span className="text-white font-semibold tracking-wider uppercase">
             {percentCleared >= 65 ? (
-              <span className="text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>CANDIDATE IDENTITY VERIFIED • READY TO HIRE</span>
+              <span className="text-emerald-400 flex items-center gap-1 sm:gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span>
+                  <span className="hidden sm:inline">CANDIDATE IDENTITY VERIFIED • READY TO HIRE</span>
+                  <span className="sm:hidden">CANDIDATE VERIFIED</span>
+                </span>
               </span>
             ) : (
-              <span className="text-neutral-300 flex items-center gap-1.5">
-                <Droplets className="w-3.5 h-3.5 text-[#00f0ff]" />
-                <span>FOGGED STEAM GLASS • RUB TO REVEAL IDENTITY</span>
+              <span className="text-neutral-300 flex items-center gap-1 sm:gap-1.5">
+                <Droplets className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00f0ff] shrink-0" />
+                <span>
+                  <span className="hidden sm:inline">FOGGED STEAM GLASS • RUB TO REVEAL IDENTITY</span>
+                  <span className="sm:hidden">RUB GLASS TO REVEAL</span>
+                </span>
               </span>
             )}
           </span>
         </div>
 
         {/* Progress & Auto-Recovery Indicator */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
           {/* Cleared Percentage Badge */}
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-[10px] sm:text-[11px]">
+          <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-[9px] sm:text-[11px]">
             <span className="text-[#00f0ff] font-bold">{percentCleared}%</span>
-            <span>STEAM CLEARED</span>
+            <span>CLEARED</span>
           </div>
 
           {/* 20-Second Auto-Recovery Countdown Badge */}
           {percentCleared > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-[10px] sm:text-[11px] font-mono animate-pulse">
-              <Timer className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-[9px] sm:text-[11px] font-mono animate-pulse">
+              <Timer className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>RE-FOGS IN {recoveryCountdown ?? AUTO_REFOG_SECONDS}s</span>
             </div>
           )}
@@ -650,7 +659,7 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
             onClick={handleClearAll}
             onMouseEnter={() => onHoverAction?.('CLEAR')}
             onMouseLeave={onHoverEnd}
-            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white/5 hover:bg-[#00f0ff] hover:text-black text-neutral-300 hover:border-[#00f0ff] border border-white/10 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-all duration-300 cursor-pointer active:scale-95"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/5 hover:bg-[#00f0ff] hover:text-black text-neutral-300 hover:border-[#00f0ff] border border-white/10 text-[9px] sm:text-[11px] font-mono uppercase tracking-wider transition-all duration-300 cursor-pointer active:scale-95"
             title="Wipe entire glass surface clean"
           >
             <Eye className="w-3 h-3" />
@@ -660,16 +669,16 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
       </div>
 
       {/* Main Colossal Name: Single Line "KISHAN H.P" Sitting Directly Beneath the Foggy Glass with Thunder Reactions */}
-      <div className="relative z-10 py-6 md:py-10 flex items-baseline overflow-hidden leading-none tracking-tighter">
+      <div className="relative z-10 py-3 sm:py-6 md:py-10 flex items-baseline overflow-hidden leading-none tracking-tighter">
         <motion.div
           initial={{ y: '100%', rotateX: -20, opacity: 0 }}
           animate={{ y: '0%', rotateX: 0, opacity: 1 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex flex-wrap sm:flex-nowrap items-baseline gap-3 sm:gap-5 md:gap-8 select-none"
+          className="flex flex-wrap sm:flex-nowrap items-baseline gap-1.5 xs:gap-3 sm:gap-5 md:gap-8 select-none max-w-full"
         >
           {/* Name: KISHAN */}
           <h1
-            className={`font-display text-[14vw] sm:text-[11vw] md:text-[9.5vw] lg:text-[7.8vw] xl:text-[7vw] uppercase font-extrabold transition-all duration-300 ${
+            className={`font-display text-[11.5vw] xs:text-[11vw] sm:text-[10vw] md:text-[8.5vw] lg:text-[7.5vw] xl:text-[7vw] uppercase font-extrabold transition-all duration-300 ${
               thunderFlash
                 ? 'text-cyan-100 drop-shadow-[0_0_60px_#00f0ff] brightness-150'
                 : percentCleared > 65
@@ -682,7 +691,7 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
 
           {/* Suffix: H.P */}
           <h1
-            className={`font-display text-[14vw] sm:text-[11vw] md:text-[9.5vw] lg:text-[7.8vw] xl:text-[7vw] uppercase font-extrabold text-transparent bg-clip-text transition-all duration-300 ${
+            className={`font-display text-[11.5vw] xs:text-[11vw] sm:text-[10vw] md:text-[8.5vw] lg:text-[7.5vw] xl:text-[7vw] uppercase font-extrabold text-transparent bg-clip-text transition-all duration-300 ${
               thunderFlash
                 ? 'bg-gradient-to-r from-white via-cyan-200 to-white drop-shadow-[0_0_65px_#00f0ff] brightness-150'
                 : percentCleared > 65
@@ -710,21 +719,21 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
       </div>
 
       {/* Sub-Header Recruiter Badges (Revealed under the name) */}
-      <div className="relative z-10 pt-4 flex flex-wrap items-center gap-3 border-t border-white/10 text-xs font-mono">
-        <div className="flex items-center gap-2 text-neutral-300">
-          <Briefcase className="w-3.5 h-3.5 text-[#00f0ff]" />
+      <div className="relative z-10 pt-2.5 sm:pt-4 flex flex-wrap items-center gap-1.5 sm:gap-3 border-t border-white/10 text-[10px] sm:text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-1.5 text-neutral-300">
+          <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00f0ff] shrink-0" />
           <span className="font-bold text-white">RECRUITER MATCH:</span>
-          <span>Frontend Specialist &bull; UI/UX Architect &bull; React &bull; TypeScript</span>
+          <span className="text-neutral-300 break-words">Frontend Specialist &bull; UI/UX Architect &bull; React &bull; TypeScript</span>
         </div>
 
         {percentCleared >= 65 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold flex items-center gap-1.5 text-[11px]"
+            className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold flex items-center gap-1.5 text-[9px] sm:text-[11px]"
           >
             <Sparkles className="w-3 h-3 text-emerald-300" />
-            <span>AVAILABLE FOR IMMEDIATE INTERVIEWS & FULL-TIME OFFERS</span>
+            <span>AVAILABLE FOR IMMEDIATE INTERVIEWS</span>
           </motion.div>
         )}
       </div>
@@ -758,21 +767,21 @@ export const FoggyGlassName: React.FC<FoggyGlassNameProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.4 }}
-            className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none p-4"
+            className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none p-2 sm:p-4"
           >
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-black/85 border border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.4)] backdrop-blur-md glow-aqua-subtle">
+            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-full bg-black/90 border border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.4)] backdrop-blur-md glow-aqua-subtle max-w-[92vw]">
               <motion.div
-                animate={{ x: [-8, 8, -8], rotate: [-8, 8, -8] }}
+                animate={{ x: [-6, 6, -6], rotate: [-6, 6, -6] }}
                 transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-                className="text-[#00f0ff]"
+                className="text-[#00f0ff] shrink-0"
               >
-                <Hand className="w-5 h-5" />
+                <Hand className="w-4 h-4 sm:w-5 sm:h-5" />
               </motion.div>
-              <div className="flex flex-col">
-                <span className="font-condensed font-extrabold uppercase text-white tracking-widest text-xs sm:text-sm">
+              <div className="flex flex-col min-w-0">
+                <span className="font-condensed font-extrabold uppercase text-white tracking-wider sm:tracking-widest text-[11px] sm:text-sm truncate">
                   RUB OR DRAG ACROSS GLASS
                 </span>
-                <span className="font-mono text-[10px] text-neutral-300">
+                <span className="hidden xs:block font-mono text-[9px] sm:text-[10px] text-neutral-300 truncate">
                   Swipe finger or drag cursor to wipe away condensation
                 </span>
               </div>

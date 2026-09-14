@@ -272,8 +272,15 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
     // Launch first droplet right away
     spawnDrop();
 
-    const render = () => {
+    let lastRenderTime = 0;
+
+    const render = (currentTime: number) => {
       if (!animActive) return;
+      const rawElapsed = lastRenderTime > 0 ? (currentTime - lastRenderTime) / 1000 : 0.016;
+      const elapsed = Math.max(0.001, Math.min(Number.isFinite(rawElapsed) ? rawElapsed : 0.016, 0.05));
+      lastRenderTime = currentTime;
+      const dt = elapsed * 60;
+
       const ctx = canvas.getContext('2d');
       if (ctx) {
         const w = canvas.width;
@@ -295,7 +302,7 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
         if (flashAlphaRef.current > 0.01) {
           ctx.fillStyle = `rgba(200, 245, 255, ${flashAlphaRef.current * 0.55})`;
           ctx.fillRect(0, 0, w, h);
-          flashAlphaRef.current *= 0.86; // rapid decay
+          flashAlphaRef.current *= Math.pow(0.86, dt); // rapid decay
         }
 
         // 3. Render Lightning Bolts
@@ -328,7 +335,7 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
             ctx.lineWidth = bolt.width;
             ctx.stroke();
 
-            bolt.alpha *= 0.82;
+            bolt.alpha *= Math.pow(0.82, dt);
           }
           lightningRef.current = lightningRef.current.filter((b) => b.alpha > 0.05);
           ctx.restore();
@@ -346,8 +353,8 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
           ctx.strokeStyle = `rgba(180, 230, 255, ${r.alpha})`;
           ctx.stroke();
 
-          r.y += r.speed;
-          r.x -= windDrift;
+          r.y += r.speed * dt;
+          r.x -= windDrift * dt;
           if (r.y > h) {
             r.y = -20;
             r.x = Math.random() * (w + 100);
@@ -378,41 +385,49 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
 
         // 6. Render Ground Water Ripples (Flattened ellipses for 3D depth)
         ctx.save();
+        const ripAlphaDecay = Math.pow(0.965, dt);
         for (let i = ripplesRef.current.length - 1; i >= 0; i--) {
           const rip = ripplesRef.current[i];
-          rip.radius += rip.speed;
-          rip.alpha *= 0.965;
+          rip.radius += rip.speed * dt;
+          rip.alpha *= ripAlphaDecay;
+
+          if (rip.radius <= 0 || rip.radius >= rip.maxRadius || rip.alpha <= 0.02) {
+            ripplesRef.current.splice(i, 1);
+            continue;
+          }
+
+          const majorRadius = Math.max(0.1, rip.radius);
+          const minorRadius = Math.max(0.05, majorRadius * 0.32);
 
           ctx.beginPath();
           // Flatten Y by 0.32 to simulate perspective water plane
-          ctx.ellipse(rip.x, rip.y, rip.radius, rip.radius * 0.32, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(0, 240, 255, ${rip.alpha * 0.8})`;
+          ctx.ellipse(rip.x, rip.y, majorRadius, minorRadius, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${Math.max(0, rip.alpha * 0.8)})`;
           ctx.lineWidth = rip.lineWidth;
           ctx.shadowColor = '#00f0ff';
           ctx.shadowBlur = 8;
           ctx.stroke();
 
           // Second inner bright crest
+          const innerMajor = Math.max(0.1, majorRadius * 0.75);
+          const innerMinor = Math.max(0.05, innerMajor * 0.32);
           ctx.beginPath();
-          ctx.ellipse(rip.x, rip.y, rip.radius * 0.75, rip.radius * 0.75 * 0.32, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(255, 255, 255, ${rip.alpha * 0.5})`;
+          ctx.ellipse(rip.x, rip.y, innerMajor, innerMinor, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, rip.alpha * 0.5)})`;
           ctx.lineWidth = 1;
           ctx.stroke();
-
-          if (rip.radius >= rip.maxRadius || rip.alpha <= 0.02) {
-            ripplesRef.current.splice(i, 1);
-          }
         }
         ctx.restore();
 
         // 7. Render Splashing Crown Droplets
         ctx.save();
+        const splashAlphaDecay = Math.pow(0.96, dt);
         for (let i = splashesRef.current.length - 1; i >= 0; i--) {
           const s = splashesRef.current[i];
-          s.x += s.vx;
-          s.y += s.vy;
-          s.vy += s.gravity; // Gravity pulling splash back down
-          s.alpha *= 0.96;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          s.vy += s.gravity * dt; // Gravity pulling splash back down
+          s.alpha *= splashAlphaDecay;
 
           // Droplet body with aqua glow
           ctx.beginPath();
@@ -431,8 +446,8 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
         // 8. Render Main Falling Water Droplet
         const drop = dropRef.current;
         if (drop.active) {
-          drop.vy += 0.42; // Gravity acceleration
-          drop.y += drop.vy;
+          drop.vy += 0.42 * dt; // Gravity acceleration
+          drop.y += drop.vy * dt;
 
           ctx.save();
           // Draw teardrop shape with hydrodynamic tail
@@ -461,8 +476,10 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
           ctx.fill();
 
           // Specular glint highlight
+          const specRadiusX = Math.max(0.1, Math.abs(r * 0.3));
+          const specRadiusY = Math.max(0.05, Math.abs(r * 0.18));
           ctx.beginPath();
-          ctx.ellipse(tx - r * 0.35, ty + r * 0.2, r * 0.3, r * 0.18, -Math.PI / 4, 0, Math.PI * 2);
+          ctx.ellipse(tx - r * 0.35, ty + r * 0.2, specRadiusX, specRadiusY, -Math.PI / 4, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
           ctx.fill();
 
@@ -476,7 +493,7 @@ export const StormDropletCanvas: React.FC<StormDropletCanvasProps> = ({ onThunde
           }
         } else {
           // Decrement timer to spawn next drop
-          nextDropTimerRef.current--;
+          nextDropTimerRef.current -= dt;
           if (nextDropTimerRef.current <= 0) {
             spawnDrop();
           }

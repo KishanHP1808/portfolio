@@ -14,7 +14,8 @@ import {
   List,
   UploadCloud,
   FileCheck2,
-  Info
+  Info,
+  ArrowLeft,
 } from 'lucide-react';
 import { CERTIFICATES, PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
 import { Certificate } from '../types';
@@ -489,12 +490,26 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-2xl p-8 md:p-10 rounded-3xl bg-neutral-950 border border-white/20 glow-aqua max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
-                <div className="flex items-center gap-2 text-xs font-mono text-[#00f0ff] uppercase tracking-widest">
-                  <Award className="w-4 h-4" />
-                  <span>CREDENTIAL VERIFICATION DOSSIER</span>
+              <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4 gap-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    id="cert-modal-back-btn-top"
+                    onClick={() => setSelectedCert(null)}
+                    className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-[#00f0ff] hover:border-[#00f0ff] hover:text-black text-white text-xs font-mono font-bold tracking-wider transition-all duration-300 cursor-pointer"
+                    title="Back to Certificates"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                    <span>BACK TO CERTIFICATES</span>
+                  </button>
+
+                  <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#00f0ff] uppercase tracking-widest">
+                    <Award className="w-4 h-4" />
+                    <span>CREDENTIAL DOSSIER</span>
+                  </div>
                 </div>
+
                 <button
+                  id="cert-modal-close-icon-btn"
                   onClick={() => setSelectedCert(null)}
                   className="px-3 py-1 rounded-full border border-white/20 text-xs font-mono text-neutral-400 hover:text-white hover:border-white transition-colors cursor-pointer"
                 >
@@ -544,13 +559,17 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-end gap-3">
+                <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
                   <button
+                    id="cert-modal-back-btn-bottom"
                     onClick={() => setSelectedCert(null)}
-                    className="px-5 py-2.5 rounded-full border border-white/20 text-xs font-mono text-neutral-300 hover:text-white transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 bg-white/5 text-xs font-mono font-bold uppercase tracking-wider text-neutral-200 hover:text-black hover:bg-white transition-all cursor-pointer"
                   >
-                    CLOSE
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>BACK TO CERTIFICATES</span>
                   </button>
+
+                  <div className="flex flex-wrap items-center gap-3">
 
                   <a
                     href={CERTIFICATES_DRIVE_CONFIG.url}
@@ -573,7 +592,8 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
           </div>
         )}
       </AnimatePresence>

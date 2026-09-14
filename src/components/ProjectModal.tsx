@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ExternalLink, Github, CheckCircle2, Layers, Cpu, Compass } from 'lucide-react';
+import { X, ExternalLink, Github, CheckCircle2, Layers, Cpu, Compass, ArrowLeft } from 'lucide-react';
 import { Project } from '../types';
+import { ProjectLikeButton } from './ProjectLikeButton';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -55,18 +56,34 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border border-white/15 rounded-2xl shadow-2xl p-6 md:p-10 z-10 custom-scrollbar"
         >
           {/* Header Row */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-8">
-            <div className="flex items-center gap-3 text-xs font-mono tracking-widest text-[#00f0ff]">
-              <span>PROJECT {project.number}</span>
-              <span className="text-neutral-600">•</span>
-              <span className="text-neutral-400">{project.category}</span>
+          <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-8 gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                id="project-modal-back-btn-top"
+                onClick={onClose}
+                onMouseEnter={() => onHoverAction?.('BACK')}
+                onMouseLeave={onHoverEnd}
+                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-[#00f0ff] hover:border-[#00f0ff] hover:text-black text-white text-xs font-mono font-bold tracking-wider transition-all duration-300 cursor-pointer shadow-sm"
+                title="Back to Featured Projects"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                <span>BACK TO PROJECTS</span>
+              </button>
+
+              <div className="hidden sm:flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff]">
+                <span className="text-neutral-600">•</span>
+                <span>PROJECT {project.number}</span>
+                <span className="text-neutral-600">•</span>
+                <span className="text-neutral-400">{project.category}</span>
+              </div>
             </div>
 
             <button
+              id="project-modal-close-icon-btn"
               onClick={onClose}
               onMouseEnter={() => onHoverAction?.('CLOSE')}
               onMouseLeave={onHoverEnd}
-              className="p-2 rounded-full border border-white/10 hover:border-[#00f0ff] hover:text-[#00f0ff] text-neutral-300 transition-colors cursor-pointer"
+              className="p-2 rounded-full border border-white/10 hover:border-[#00f0ff] hover:text-[#00f0ff] text-neutral-300 transition-colors cursor-pointer shrink-0"
               aria-label="Close Case Study"
             >
               <X className="w-5 h-5" />
@@ -92,9 +109,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.currentTarget as HTMLImageElement;
-                if (project.id === 'football-auction') {
-                  target.src = 'https://wallpapers.com/images/featured/messi-4k-ultra-hd-t7otmb1xwl662a0r.jpg';
-                }
+                target.src = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1600&auto=format&fit=crop';
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -179,6 +194,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                  <span className="text-xs font-mono text-neutral-400">APPRECIATION</span>
+                  <ProjectLikeButton
+                    projectId={project.id}
+                    projectTitle={project.title}
+                    onHoverAction={onHoverAction}
+                    onHoverEnd={onHoverEnd}
+                  />
+                </div>
+
                 {project.liveUrl && (
                   <a
                     href={project.liveUrl}
@@ -206,6 +231,18 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                     <Github className="w-4 h-4" />
                   </a>
                 )}
+
+                {/* Prominent Bottom Back Option */}
+                <button
+                  id="project-modal-back-btn-bottom"
+                  onClick={onClose}
+                  onMouseEnter={() => onHoverAction?.('BACK')}
+                  onMouseLeave={onHoverEnd}
+                  className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl border border-white/20 bg-white/5 text-neutral-200 font-mono text-xs uppercase tracking-wider font-bold hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>BACK TO FEATURED PROJECTS</span>
+                </button>
               </div>
             </div>
           </div>

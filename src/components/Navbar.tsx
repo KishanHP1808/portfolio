@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive } from 'lucide-react';
+import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare } from 'lucide-react';
 import { PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
 import { SoundDesign } from './SoundDesign';
-import { ResumeModal } from './ResumeModal';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
 
 interface NavbarProps {
   onHoverAction?: (text: string) => void;
   onHoverEnd?: () => void;
+  onOpenTalkToHim?: () => void;
+  onOpenResume?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onHoverAction,
+  onHoverEnd,
+  onOpenTalkToHim,
+  onOpenResume,
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [resumeOpen, setResumeOpen] = useState(false);
   const [mysuruTime, setMysuruTime] = useState('');
 
   // Live Mysuru (IST, UTC+5:30) Time clock
@@ -52,10 +57,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
 
   // Global listener to open resume from anywhere
   useEffect(() => {
-    const handleOpenResume = () => setResumeOpen(true);
+    const handleOpenResume = () => {
+      if (onOpenResume) onOpenResume();
+    };
     window.addEventListener('open-resume', handleOpenResume);
     return () => window.removeEventListener('open-resume', handleOpenResume);
-  }, []);
+  }, [onOpenResume]);
+
+  // Global listener to open talk to him modal from anywhere
+  useEffect(() => {
+    const handleOpenTalk = () => {
+      if (onOpenTalkToHim) onOpenTalkToHim();
+    };
+    window.addEventListener('open-talk-to-him', handleOpenTalk);
+    window.addEventListener('open-talk-together', handleOpenTalk);
+    return () => {
+      window.removeEventListener('open-talk-to-him', handleOpenTalk);
+      window.removeEventListener('open-talk-together', handleOpenTalk);
+    };
+  }, [onOpenTalkToHim]);
 
   // Close menu on Escape
   useEffect(() => {
@@ -111,32 +131,52 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
         id="main-navigation"
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
           isScrolled
-            ? 'py-4 bg-[#050505]/85 backdrop-blur-md border-b border-white/[0.07]'
-            : 'py-6 md:py-8 bg-transparent'
+            ? 'py-3 sm:py-4 bg-[#050505]/85 backdrop-blur-md border-b border-white/[0.07]'
+            : 'py-3 sm:py-6 md:py-8 bg-transparent'
         }`}
       >
-        <div className="max-w-[1700px] mx-auto px-6 md:px-12 flex items-center justify-between">
-          {/* Location & Time Indicator (Top Left) */}
-          <a
-            href="#hero"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onMouseEnter={() => onHoverAction?.('TOP')}
-            onMouseLeave={onHoverEnd}
-            className="group flex items-center gap-2.5 text-white tracking-widest transition-colors cursor-pointer py-1"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff] group-hover:scale-125 transition-transform duration-300" />
-            <span className="text-xs font-mono text-neutral-300 tracking-widest font-medium group-hover:text-white transition-colors">
-              MYSURU {mysuruTime ? `[${mysuruTime} IST]` : '[IST]'}
-            </span>
-          </a>
+        <div className="max-w-[1700px] mx-auto px-2.5 sm:px-6 md:px-12 flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          {/* Location, Time & College Indicator (Top Left) */}
+          <div className="flex flex-col items-start gap-0.5 min-w-0 shrink">
+            <a
+              href="#hero"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onMouseEnter={() => onHoverAction?.('TOP')}
+              onMouseLeave={onHoverEnd}
+              className="group flex items-center gap-1.5 sm:gap-2 text-white tracking-widest transition-colors cursor-pointer py-0.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff] group-hover:scale-125 transition-transform duration-300 shrink-0" />
+              <span className="text-[10px] sm:text-xs font-mono text-neutral-300 tracking-widest font-medium group-hover:text-white transition-colors truncate">
+                MYSURU {mysuruTime ? `[${mysuruTime} IST]` : '[IST]'}
+              </span>
+            </a>
+
+            {/* Below Mysuru and Time: College Link */}
+            <a
+              href="https://mitt.edu.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={() => onHoverAction?.('COLLEGE')}
+              onMouseLeave={onHoverEnd}
+              className="group flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-mono text-neutral-400 hover:text-[#00f0ff] transition-all duration-300 pl-3 sm:pl-4 max-w-[110px] xs:max-w-[160px] sm:max-w-xs md:max-w-sm"
+              title="Maharaja Institute of Technology Tandavapura (https://mitt.edu.in/)"
+            >
+              <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00f0ff]/80 group-hover:text-[#00f0ff] transition-colors shrink-0" />
+              <span className="truncate text-neutral-400 group-hover:text-white group-hover:underline underline-offset-2 transition-colors">
+                <span className="xs:hidden">MIT Tandavapura</span>
+                <span className="hidden xs:inline">Maharaja Institute of Technology Tandavapura</span>
+              </span>
+              <ExternalLink className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+            </a>
+          </div>
 
           {/* Center / Right controls */}
-          <div className="flex items-center gap-3 sm:gap-4 md:gap-8">
+          <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 md:gap-6 shrink-0">
             {/* Desktop Minimal Quick Links */}
-            <nav className="hidden lg:flex items-center gap-8 text-xs font-mono tracking-widest text-neutral-400">
+            <nav className="hidden lg:flex items-center gap-7 text-xs font-mono tracking-widest text-neutral-400">
               {navLinks.map((link) => (
                 <button
                   key={link.label}
@@ -151,17 +191,38 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
               ))}
             </nav>
 
+            {/* Talk To Him Action Button */}
+            <button
+              id="header-talk-to-him-btn"
+              onClick={() => {
+                if (onOpenTalkToHim) onOpenTalkToHim();
+                window.dispatchEvent(new CustomEvent('open-talk-to-him'));
+                window.dispatchEvent(new CustomEvent('open-talk-together'));
+              }}
+              onMouseEnter={() => onHoverAction?.('TALK')}
+              onMouseLeave={onHoverEnd}
+              className="inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all duration-300 font-condensed tracking-widest text-[11px] sm:text-xs uppercase font-bold cursor-pointer"
+              title="Talk To Him (Instagram, Email, Direct Text)"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">TALK TO HIM</span>
+              <span className="sm:hidden">TALK</span>
+            </button>
+
             {/* Quick Resume Download Action in Header */}
             <button
               id="header-resume-download-btn"
-              onClick={() => setResumeOpen(true)}
+              onClick={() => {
+                if (onOpenResume) onOpenResume();
+                window.dispatchEvent(new CustomEvent('open-resume'));
+              }}
               onMouseEnter={() => onHoverAction?.('RESUME')}
               onMouseLeave={onHoverEnd}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 hover:bg-[#00f0ff] hover:text-black text-[#00f0ff] transition-all duration-300 font-condensed tracking-widest text-xs uppercase font-bold cursor-pointer glow-aqua-subtle"
+              className="inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 hover:bg-[#00f0ff] hover:text-black text-[#00f0ff] transition-all duration-300 font-condensed tracking-widest text-[11px] sm:text-xs uppercase font-bold cursor-pointer glow-aqua-subtle"
               title="Download or Preview Official Resume (PDF)"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>RESUME</span>
+              <span className="hidden xs:inline">RESUME</span>
             </button>
 
             {/* Sound / Atmosphere Design Toggle */}
@@ -173,13 +234,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
               onClick={() => setMenuOpen(!menuOpen)}
               onMouseEnter={() => onHoverAction?.(menuOpen ? 'CLOSE' : 'MENU')}
               onMouseLeave={onHoverEnd}
-              className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:border-[#00f0ff] hover:bg-[#00f0ff]/10 text-white transition-all duration-300 cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20 bg-white/5 hover:border-[#00f0ff] hover:bg-[#00f0ff]/10 text-white transition-all duration-300 cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
-              <span className="font-condensed tracking-widest text-xs uppercase font-bold">
+              <span className="font-condensed tracking-widest text-[11px] sm:text-xs uppercase font-bold">
                 {menuOpen ? 'CLOSE' : 'MENU'}
               </span>
-              <div className="flex flex-col gap-1 w-4">
+              <div className="flex flex-col gap-1 w-3.5 sm:w-4">
                 <span
                   className={`h-[1.5px] bg-white transition-all duration-300 ${
                     menuOpen ? 'rotate-45 translate-y-[2.5px] bg-[#00f0ff]' : 'w-full'
@@ -279,7 +340,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
                 ))}
 
                 {/* 07 RESUME Link & Card */}
-                <div className="mt-2 pt-3 border-t border-white/10">
+                <div className="mt-2 pt-3 border-t border-white/10 space-y-2.5">
+                  {/* Talk To Him Interactive Option */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      if (onOpenTalkToHim) onOpenTalkToHim();
+                      window.dispatchEvent(new CustomEvent('open-talk-to-him'));
+                      window.dispatchEvent(new CustomEvent('open-talk-together'));
+                    }}
+                    onMouseEnter={() => onHoverAction?.('TALK')}
+                    onMouseLeave={onHoverEnd}
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-[#00f0ff]/10 border border-emerald-500/40 hover:border-emerald-500 text-white transition-all duration-200 cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.15)] group text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-display text-base font-bold text-emerald-400 group-hover:text-white transition-colors">
+                            TALK TO HIM
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-mono">
+                            ACTIVE
+                          </span>
+                        </div>
+                        <div className="text-[10px] font-mono text-neutral-400">
+                          Instagram • Email • Direct Text
+                        </div>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </button>
+
                   <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-[#00f0ff]/30 transition-colors">
                     <div className="flex items-center justify-between mb-2.5">
                       <div className="flex items-center gap-2">
@@ -309,7 +404,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
                         type="button"
                         onClick={() => {
                           setMenuOpen(false);
-                          setResumeOpen(true);
+                          if (onOpenResume) onOpenResume();
+                          window.dispatchEvent(new CustomEvent('open-resume'));
                         }}
                         onMouseEnter={() => onHoverAction?.('PREVIEW')}
                         onMouseLeave={onHoverEnd}
@@ -374,14 +470,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onHoverAction, onHoverEnd }) => 
           </>
         )}
       </AnimatePresence>
-
-      {/* Interactive Resume Modal Overlay */}
-      <ResumeModal
-        isOpen={resumeOpen}
-        onClose={() => setResumeOpen(false)}
-        onHoverAction={onHoverAction}
-        onHoverEnd={onHoverEnd}
-      />
     </>
   );
 };

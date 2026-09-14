@@ -12,7 +12,8 @@ import {
   GraduationCap,
   Award,
   Layers,
-  Code2
+  Code2,
+  ArrowLeft,
 } from 'lucide-react';
 import { PERSONAL_INFO, EXPERIENCES, CERTIFICATES } from '../data/portfolioData';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
@@ -117,7 +118,19 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
+                <button
+                  id="resume-modal-back-btn-top"
+                  onClick={onClose}
+                  onMouseEnter={() => onHoverAction?.('BACK')}
+                  onMouseLeave={onHoverEnd}
+                  className="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-[#00f0ff] hover:border-[#00f0ff] hover:text-black text-white text-xs font-mono uppercase font-bold tracking-wider transition-all duration-300 cursor-pointer"
+                  title="Back to Portfolio"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                  <span>BACK</span>
+                </button>
+
                 <button
                   onClick={onClose}
                   className="p-2 rounded-full border border-white/20 text-neutral-400 hover:text-white hover:border-white transition-colors cursor-pointer"
@@ -371,10 +384,14 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
 
               <div className="flex items-center gap-3">
                 <button
+                  id="resume-modal-back-btn-bottom"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-full border border-white/20 text-xs font-mono text-neutral-400 hover:text-white hover:border-white transition-colors cursor-pointer"
+                  onMouseEnter={() => onHoverAction?.('BACK')}
+                  onMouseLeave={onHoverEnd}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-xs font-mono font-bold uppercase tracking-wider text-neutral-300 hover:text-white hover:border-[#00f0ff] hover:bg-white/5 transition-all cursor-pointer"
                 >
-                  CLOSE
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>BACK TO PORTFOLIO</span>
                 </button>
 
                 <button

@@ -8,10 +8,27 @@
     --font-syne: 'Syne', sans-serif;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     background-color: #020813;
     color: #ededed;
     font-family: var(--font-sans);
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  /* Force GPU compositing for fast 180 FPS animations */
+  canvas,
+  .will-gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 }
 
@@ -31,6 +48,13 @@
 
 .font-syne {
   font-family: 'Syne', sans-serif;
+}
+
+/* 180 FPS Compositing & High Refresh Optimization */
+.gpu-accel {
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* Atmospheric Water Texture Overlay */

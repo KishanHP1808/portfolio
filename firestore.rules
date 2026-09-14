@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation for Contact Inquiries
+    function isValidInquiry(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+        && data.keys().size() == 4
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 150
+        && data.message is string && data.message.size() >= 1 && data.message.size() <= 2000
+        && data.createdAt is string && data.createdAt.size() <= 100;
+    }
+
+    // Validation for Project Likes / Reactions
+    function isValidProjectLike(data) {
+      return data.keys().hasAll(['projectId', 'likesCount', 'updatedAt'])
+        && data.keys().size() == 3
+        && data.projectId is string && data.projectId.size() >= 1 && data.projectId.size() <= 100
+        && data.likesCount is number && data.likesCount >= 0
+        && data.updatedAt is string && data.updatedAt.size() <= 100;
+    }
+
+    // Validation for Guestbook Entries
+    function isValidGuestbook(data) {
+      return data.keys().hasAll(['name', 'role', 'message', 'createdAt'])
+        && data.keys().size() == 4
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.role is string && data.role.size() >= 1 && data.role.size() <= 80
+        && data.message is string && data.message.size() >= 1 && data.message.size() <= 500
+        && data.createdAt is string && data.createdAt.size() <= 100;
+    }
+
+    // Contact Inquiries: Create-only for visitors, private
+    match /inquiries/{inquiryId} {
+      allow create: if isValidId(inquiryId) && isValidInquiry(incoming());
+      allow read, update, delete: if false;
+    }
+
+    // Project Likes: Publicly readable, atomic +1 increments
+    match /project_likes/{projectId} {
+      allow read: if isValidId(projectId);
+      allow create: if isValidId(projectId)
+        && isValidProjectLike(incoming())
+        && incoming().projectId == projectId
+        && incoming().likesCount == 1;
+      allow update: if isValidId(projectId)
+        && isValidProjectLike(incoming())
+        && incoming().projectId == projectId
+        && incoming().diff(existing()).affectedKeys().hasOnly(['likesCount', 'updatedAt'])
+        && incoming().likesCount == existing().likesCount + 1;
+      allow delete: if false;
+    }
+
+    // Guestbook: Publicly readable endorsements, create-only
+    match /guestbook/{entryId} {
+      allow read: if true;
+      allow create: if isValidId(entryId) && isValidGuestbook(incoming());
+      allow update, delete: if false;
+    }
+  }
+}

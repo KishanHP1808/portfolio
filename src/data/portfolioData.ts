@@ -15,13 +15,20 @@ export const PERSONAL_INFO = {
   locationShort: "Mysuru, Karnataka",
   coordinates: "12.2958° N, 76.6394° E",
   email: "kishanhp18@gmail.com",
+  phone: "8431926645",
+  college: {
+    name: "Maharaja Institute of Technology Tandavapura",
+    shortName: "MIT Tandavapura",
+    url: "https://mitt.edu.in/",
+  },
   heroTagline: "I build digital experiences where design, technology and interaction meet.",
   aboutHeadline: "I design and build digital experiences that feel as good as they function.",
   aboutDescription: "KISHAN H.P is a frontend developer, UI/UX designer and full stack web developer based in Mysuru, Karnataka. Bridging the divide between high-fidelity aesthetics and robust engineering, he crafts visceral interfaces with cinematic pacing and performance-first architecture.",
   socials: {
     github: "https://github.com/KishanHP1808",
     linkedin: "https://www.linkedin.com/in/kishan-h-p-9766063b3",
-    instagram: "https://instagram.com/kishan.hp",
+    instagram: "https://www.instagram.com/kishan_h.p.shaiva?stkn=eWhsY3BtNnhsZDg4",
+    instagramHandle: "kishan_h.p.shaiva",
     leetcode: "https://leetcode.com/u/Kishan_H_P",
     leetcodeUsername: "Kishan_HP",
     googleDriveCertificates: "https://drive.google.com/drive/folders/1RqCIJMREGOfOVoxlt33iGVFRvRwHIpnZ?usp=drive_link"
