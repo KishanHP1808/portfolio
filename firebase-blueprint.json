@@ -1,5 +1,45 @@
 {
   "entities": {
+    "user_profile": {
+      "title": "User Profile",
+      "description": "Authenticated visitor or recruiter profile securely tracked via Firebase Auth",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth user ID"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Display name"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "User email address"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Avatar image URL"
+        },
+        "savedProjects": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of saved/bookmarked project IDs"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Recruiter private scratchpad or notes"
+        },
+        "lastActiveAt": {
+          "type": "string",
+          "description": "Last active ISO timestamp"
+        }
+      },
+      "required": ["uid", "lastActiveAt"]
+    },
     "inquiry": {
       "title": "Contact Inquiry",
       "description": "Direct message or project inquiry submitted by a portfolio visitor",
@@ -26,6 +66,10 @@
         "createdAt": {
           "type": "string",
           "description": "Submission ISO timestamp"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Optional authenticated visitor UID"
         }
       },
       "required": ["name", "email", "message", "createdAt"]
@@ -78,12 +122,24 @@
         "createdAt": {
           "type": "string",
           "description": "Entry creation timestamp"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Optional verified Firebase Auth user ID"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "Optional profile picture URL from Google Auth"
         }
       },
       "required": ["name", "role", "message", "createdAt"]
     }
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": "user_profile",
+      "description": "User profile with saved bookmarks and recruitment notes, accessible only by owner"
+    },
     "/inquiries/{inquiryId}": {
       "schema": "inquiry",
       "description": "Collection of visitor inquiries and contact messages"

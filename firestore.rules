@@ -7,6 +7,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
     function isValidId(id) {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -19,14 +27,25 @@ service cloud.firestore {
       return resource.data;
     }
 
+    // Validation for User Profiles
+    function isValidUserProfile(data, userId) {
+      return data.uid == userId
+        && (!('displayName' in data) || data.displayName is string)
+        && (!('email' in data) || data.email is string)
+        && (!('photoURL' in data) || data.photoURL is string)
+        && (!('savedProjects' in data) || data.savedProjects is list)
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 1000))
+        && data.lastActiveAt is string;
+    }
+
     // Validation for Contact Inquiries
     function isValidInquiry(data) {
       return data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
-        && data.keys().size() == 4
         && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
         && data.email is string && data.email.size() >= 3 && data.email.size() <= 150
         && data.message is string && data.message.size() >= 1 && data.message.size() <= 2000
-        && data.createdAt is string && data.createdAt.size() <= 100;
+        && data.createdAt is string && data.createdAt.size() <= 100
+        && (!('userId' in data) || data.userId is string);
     }
 
     // Validation for Project Likes / Reactions
@@ -41,14 +60,20 @@ service cloud.firestore {
     // Validation for Guestbook Entries
     function isValidGuestbook(data) {
       return data.keys().hasAll(['name', 'role', 'message', 'createdAt'])
-        && data.keys().size() == 4
         && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
         && data.role is string && data.role.size() >= 1 && data.role.size() <= 80
         && data.message is string && data.message.size() >= 1 && data.message.size() <= 500
-        && data.createdAt is string && data.createdAt.size() <= 100;
+        && data.createdAt is string && data.createdAt.size() <= 100
+        && (!('userId' in data) || data.userId is string)
+        && (!('avatarUrl' in data) || data.avatarUrl is string);
     }
 
-    // Contact Inquiries: Create-only for visitors, private
+    // User Profiles: Private to authenticated owner
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) && isValidUserProfile(incoming(), userId);
+    }
+
+    // Contact Inquiries: Create-only for visitors, private to avoid public leak
     match /inquiries/{inquiryId} {
       allow create: if isValidId(inquiryId) && isValidInquiry(incoming());
       allow read, update, delete: if false;

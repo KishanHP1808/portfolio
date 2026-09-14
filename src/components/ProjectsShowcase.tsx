@@ -5,6 +5,7 @@ import { PROJECTS } from '../data/portfolioData';
 import { Project } from '../types';
 import { HoloTiltCard } from './HoloTiltCard';
 import { ProjectLikeButton } from './ProjectLikeButton';
+import { ProjectBookmarkButton } from './ProjectBookmarkButton';
 
 interface ProjectsShowcaseProps {
   onSelectProject: (project: Project) => void;
@@ -203,6 +204,14 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
 
                     {/* Real-time Firebase Appreciation Endorsement */}
                     <ProjectLikeButton
+                      projectId={project.id}
+                      projectTitle={project.title}
+                      onHoverAction={onHoverAction}
+                      onHoverEnd={onHoverEnd}
+                    />
+
+                    {/* Firestore Recruiter Shortlist Bookmark */}
+                    <ProjectBookmarkButton
                       projectId={project.id}
                       projectTitle={project.title}
                       onHoverAction={onHoverAction}

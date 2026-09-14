@@ -24,6 +24,7 @@ import {
   addGuestbookNote,
   GuestbookEntry,
 } from '../services/firebaseService';
+import { useAuth } from '../context/AuthContext';
 
 interface ContactSectionProps {
   onHoverAction?: (text: string) => void;
@@ -36,6 +37,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   onHoverEnd,
   onOpenTalkToHim,
 }) => {
+  const { user } = useAuth();
   const [copied, setCopied] = useState(false);
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +49,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     method?: string;
     message?: string;
   } | null>(null);
+
+  // Pre-fill user info if signed in
+  useEffect(() => {
+    if (user) {
+      if (user.displayName && !formData.name) {
+        setFormData((prev) => ({ ...prev, name: user.displayName || '' }));
+      }
+      if (user.email && !formData.email) {
+        setFormData((prev) => ({ ...prev, email: user.email || '' }));
+      }
+      if (user.displayName && !guestbookForm.name) {
+        setGuestbookForm((prev) => ({ ...prev, name: user.displayName || '' }));
+      }
+    }
+  }, [user]);
 
   // Guestbook state
   const [activeTab, setActiveTab] = useState<'message' | 'guestbook'>('message');
@@ -108,6 +125,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           name: formData.name,
           email: formData.email,
           message: formData.message,
+          userId: user?.uid,
         });
       } catch (firestoreErr) {
         console.warn('Firestore backup note:', firestoreErr);
@@ -147,9 +165,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       await addGuestbookNote(
         guestbookForm.name,
         guestbookForm.role || 'Visitor',
-        guestbookForm.message
+        guestbookForm.message,
+        {
+          userId: user?.uid,
+          avatarUrl: user?.photoURL || undefined,
+        }
       );
-      setGuestbookForm({ name: '', role: '', message: '' });
+      setGuestbookForm({
+        name: user?.displayName || '',
+        role: '',
+        message: '',
+      });
       setNoteSuccess(true);
       setTimeout(() => setNoteSuccess(false), 3000);
     } catch (err) {
@@ -607,10 +633,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                       >
                         <div className="flex items-center justify-between mb-1.5">
                           <div className="flex items-center gap-2">
+                            {entry.avatarUrl ? (
+                              <img
+                                src={entry.avatarUrl}
+                                alt={entry.name}
+                                className="w-5 h-5 rounded-full object-cover border border-[#00f0ff]/40"
+                              />
+                            ) : null}
                             <span className="font-bold text-white">{entry.name}</span>
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-[#00f0ff]">
                               {entry.role}
                             </span>
+                            {entry.userId && (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/30">
+                                Verified
+                              </span>
+                            )}
                           </div>
                           <span className="text-[10px] text-neutral-500">
                             {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : ''}

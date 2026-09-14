@@ -20,6 +20,7 @@ import { ElectricCursorTrail } from './components/ElectricCursorTrail';
 import { ThunderAiBot } from './components/ThunderAiBot';
 import { ResumeModal } from './components/ResumeModal';
 import { TalkToHimModal } from './components/TalkTogetherModal';
+import { AuthProfileModal } from './components/AuthProfileModal';
 import { Project, CursorState } from './types';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
   const [talkToHimOpen, setTalkToHimOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [cursorState, setCursorState] = useState<CursorState>({
     text: '',
     active: false,
@@ -37,15 +39,18 @@ export default function App() {
   useEffect(() => {
     const handleOpenTalk = () => setTalkToHimOpen(true);
     const handleOpenResume = () => setResumeOpen(true);
+    const handleOpenAuth = () => setAuthModalOpen(true);
 
     window.addEventListener('open-talk-to-him', handleOpenTalk);
     window.addEventListener('open-talk-together', handleOpenTalk);
     window.addEventListener('open-resume', handleOpenResume);
+    window.addEventListener('open-auth-modal', handleOpenAuth);
 
     return () => {
       window.removeEventListener('open-talk-to-him', handleOpenTalk);
       window.removeEventListener('open-talk-together', handleOpenTalk);
       window.removeEventListener('open-resume', handleOpenResume);
+      window.removeEventListener('open-auth-modal', handleOpenAuth);
     };
   }, []);
 
@@ -138,6 +143,7 @@ export default function App() {
           onHoverEnd={handleHoverEnd}
           onOpenTalkToHim={() => setTalkToHimOpen(true)}
           onOpenResume={() => setResumeOpen(true)}
+          onOpenAuthModal={() => setAuthModalOpen(true)}
         />
 
         {/* Hero Section */}
@@ -223,6 +229,14 @@ export default function App() {
       <TalkToHimModal
         isOpen={talkToHimOpen}
         onClose={() => setTalkToHimOpen(false)}
+        onHoverAction={handleHoverAction}
+        onHoverEnd={handleHoverEnd}
+      />
+
+      {/* Recruiter & Visitor Auth Hub (Google Auth + Firestore Persistence) */}
+      <AuthProfileModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
       />

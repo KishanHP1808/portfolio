@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare } from 'lucide-react';
+import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare, User, LogIn } from 'lucide-react';
 import { PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
 import { SoundDesign } from './SoundDesign';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   onHoverAction?: (text: string) => void;
   onHoverEnd?: () => void;
   onOpenTalkToHim?: () => void;
   onOpenResume?: () => void;
+  onOpenAuthModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -17,7 +19,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onHoverEnd,
   onOpenTalkToHim,
   onOpenResume,
+  onOpenAuthModal,
 }) => {
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mysuruTime, setMysuruTime] = useState('');
@@ -225,6 +229,36 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden xs:inline">RESUME</span>
             </button>
 
+            {/* Recruiter / Visitor Auth Profile Button */}
+            <button
+              id="header-auth-btn"
+              onClick={() => {
+                if (onOpenAuthModal) onOpenAuthModal();
+                window.dispatchEvent(new CustomEvent('open-auth-modal'));
+              }}
+              onMouseEnter={() => onHoverAction?.(user ? 'PROFILE' : 'SIGN IN')}
+              onMouseLeave={onHoverEnd}
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full border transition-all duration-300 font-mono text-[11px] sm:text-xs cursor-pointer ${
+                user
+                  ? 'bg-[#00f0ff]/15 border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff]/25 shadow-[0_0_15px_rgba(0,240,255,0.2)]'
+                  : 'bg-white/5 border-white/20 text-neutral-300 hover:border-[#00f0ff] hover:text-white hover:bg-white/10'
+              }`}
+              title={user ? `Signed in as ${user.displayName || user.email}` : 'Sign in with Google'}
+            >
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
+                  className="w-4 h-4 rounded-full object-cover border border-[#00f0ff]/50"
+                />
+              ) : (
+                <User className="w-3.5 h-3.5 text-[#00f0ff]" />
+              )}
+              <span className="hidden md:inline uppercase font-bold">
+                {user ? user.displayName?.split(' ')[0] || 'SAVED' : 'SIGN IN'}
+              </span>
+            </button>
+
             {/* Sound / Atmosphere Design Toggle */}
             <SoundDesign />
 
@@ -414,6 +448,33 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <span>PREVIEW</span>
                         <ExternalLink className="w-3 h-3 text-neutral-400" />
                       </button>
+                    </div>
+                  </div>
+
+                  {/* 08 RECRUITER / VISITOR DATABASE AUTH */}
+                  <div
+                    onClick={() => {
+                      setMenuOpen(false);
+                      if (onOpenAuthModal) onOpenAuthModal();
+                      window.dispatchEvent(new CustomEvent('open-auth-modal'));
+                    }}
+                    className="p-3.5 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 hover:border-[#00f0ff] transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs text-[#00f0ff] font-bold">08</span>
+                        <span className="font-display text-base font-bold text-white uppercase tracking-tight group-hover:text-[#00f0ff] transition-colors">
+                          {user ? 'RECRUITER HUB & SHORTLIST' : 'SIGN IN WITH GOOGLE'}
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-[10px] font-mono">
+                        {user ? 'CONNECTED' : 'FIRESTORE'}
+                      </span>
+                    </div>
+                    <div className="text-[10px] font-mono text-neutral-400">
+                      {user
+                        ? `Signed in as ${user.displayName || user.email} • Click to view shortlisted projects & private notes`
+                        : 'Connect via Firebase Auth to bookmark projects & take private notes'}
                     </div>
                   </div>
                 </div>
