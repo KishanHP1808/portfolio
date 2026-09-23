@@ -154,12 +154,12 @@ export const PROJECTS: Project[] = [
     category: "Full Stack • Computer Vision & AgroTech",
     year: "2026",
     role: "Full Stack Architect & Lead AI/UI Engineer",
-    technologies: ["Python", "Machine Learning", "FastAPI / Django", "React", "Tailwind CSS", "Render Deployment"],
+    technologies: ["Python", "Machine Learning", "FastAPI / Django", "React", "Tailwind CSS", "Vercel Deployment"],
     description: "An intelligent agricultural safeguarding suite diagnosing crop diseases, analyzing soil metrics, and providing predictive yield defense with real-time field telemetry.",
     longDescription: "AgriGuard transforms digital crop protection by connecting advanced agricultural computer vision models with an ergonomic, field-ready user interface. Farmers and agronomists can upload leaf imagery or monitor live crop health feeds to receive sub-second disease classification, preventative treatment protocols, and soil moisture telemetry with zero latency.",
     highlights: [
       "High-accuracy leaf pathology detection with instant diagnostic treatment guides",
-      "Live deployment on Render with sub-second API inference response times",
+      "Live deployment on Vercel with sub-second API inference response times",
       "Ergonomic mobile-first responsive interface engineered for bright outdoor field lighting",
       "Localized weather risk projections and automated pest outbreak alert triggers"
     ],
@@ -168,7 +168,7 @@ export const PROJECTS: Project[] = [
     image: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=1600&auto=format&fit=crop",
     secondaryImage: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=1200&auto=format&fit=crop",
     accentColor: "#00f0ff",
-    liveUrl: "https://agri-guard-yw1o.onrender.com",
+    liveUrl: "https://agri-guard-mocha.vercel.app/",
     githubUrl: "https://github.com/KishanHP1808/crop-disease-detection"
   },
   {
@@ -179,11 +179,11 @@ export const PROJECTS: Project[] = [
     category: "Full Stack • Real-Time Engine",
     year: "2026",
     role: "Full Stack Architect",
-    technologies: ["Python", "Django", "WebSockets", "React", "Tailwind CSS", "PostgreSQL", "Render Deployment"],
+    technologies: ["Python", "Django", "WebSockets", "React", "Tailwind CSS", "PostgreSQL", "Vercel Deployment"],
     description: "An adrenaline-fueled sports auction arena handling multi-room simultaneous bids, salary-cap validations, and real-time live audience broadcasting.",
     longDescription: "Engineered for high-stakes sports management leagues, Football Auction brings the drama of the transfer market to life. Featuring synchronized live clocks, automated budget deductions, dynamic player stat cards, and sound-reactive countdowns, it creates an electric stadium atmosphere.",
     highlights: [
-      "Sub-20ms real-time bid synchronization across concurrent bidders on Render",
+      "Sub-20ms real-time bid synchronization across concurrent bidders on Vercel",
       "Automated financial constraint enforcement and squad chemistry analytics",
       "Interactive player card reveal animations with custom sound cues",
       "Full administrative oversight with instant round pause and rollback capabilities"
@@ -193,32 +193,32 @@ export const PROJECTS: Project[] = [
     image: "/images/messi-4k.jpg",
     secondaryImage: "/images/messi-4k-action.jpg",
     accentColor: "#00e5ff",
-    liveUrl: "https://football-auction-uak7.onrender.com",
+    liveUrl: "https://football-auction-three.vercel.app/",
     githubUrl: "https://github.com/KishanHP1808/football-auction"
   },
   {
     id: "research-assistant",
     number: "03",
-    title: "PERSONAL RESEARCH ASSISTANT",
+    title: "AI ASSISTANT",
     subtitle: "Autonomous Knowledge Retrieval & Multi-Document Synthesis Engine",
     category: "AI Engineering • Full Stack",
     year: "2026",
     role: "Full Stack & AI Engineer",
-    technologies: ["Python", "LLMs / NLP", "FastAPI", "React", "TypeScript", "Tailwind CSS", "Render Deployment"],
+    technologies: ["Python", "LLMs / NLP", "FastAPI", "React", "TypeScript", "Tailwind CSS", "Vercel Deployment"],
     description: "An intelligent autonomous research companion capable of deep literature indexing, semantic cross-referencing, and instantaneous citation synthesis.",
-    longDescription: "Personal Research Assistant accelerates academic and technical inquiries. It parses dense research papers, whitepapers, and unstructured data corpuses into interactive knowledge graphs, generates structured executive summaries with source verification, and answers complex multi-hop queries with exact bibliographic anchors.",
+    longDescription: "AI Assistant accelerates academic and technical inquiries. It parses dense research papers, whitepapers, and unstructured data corpuses into interactive knowledge graphs, generates structured executive summaries with source verification, and answers complex multi-hop queries with exact bibliographic anchors.",
     highlights: [
       "Multi-document vector embedding pipeline with semantic citation verification",
       "Zero-hallucination grounded retrieval with direct source-paragraph highlighting",
       "Interactive markdown canvas with exportable research briefs and mind maps",
-      "Live deployment on Render with streaming response generation for zero wait times"
+      "Live deployment on Vercel with streaming response generation for zero wait times"
     ],
     challenge: "Preventing cognitive fatigue when synthesizing 50+ page PDFs with conflicting terminologies and complex equations.",
     solution: "Engineered a retrieval-augmented synthesis pipeline that breaks queries into sub-hypotheses and renders side-by-side verification citations.",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop",
     secondaryImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
     accentColor: "#38bdf8",
-    liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+    liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
     githubUrl: "https://github.com/KishanHP1808/Personal-Research-Assistant"
   }
 ];
@@ -236,7 +236,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Core Language & Multi-Agent AI Engine",
         primaryLanguage: "Python",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Built multi-agent research pipelines leveraging LangChain and Tavily Search API",
           "Engineered asynchronous FastAPI microservices with streaming report outputs",
@@ -249,11 +249,11 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Django 5 Backend & Computer Vision Logic",
         primaryLanguage: "Python / JS",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Constructed Django 5 REST Framework backend with comprehensive agricultural database",
           "Authored automated database seeding script (seed_database.py) with regional crop schemas",
-          "Dockerized backend deployment architecture configured for Render container hosting"
+          "Dockerized backend deployment architecture configured for Vercel and cloud hosting"
         ]
       },
       {
@@ -282,11 +282,11 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Backend Framework & REST Architecture",
         primaryLanguage: "Python / Django",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Engineered Django 5 REST Framework API endpoints for leaf disease diagnostic payloads",
           "Architected comprehensive crop database with regional Indian agricultural data",
-          "Created modular manage.py configurations, requirements.txt, and render.yaml deployment"
+          "Created modular manage.py configurations, requirements.txt, and vercel.json deployment"
         ]
       }
     ]
@@ -303,7 +303,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "High-Performance Async API Gateway",
         primaryLanguage: "Python / FastAPI",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Designed sub-second asynchronous endpoints streaming AI research tokens directly to client",
           "Implemented strict Pydantic schemas validating multi-document research queries",
@@ -337,7 +337,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Computer Vision Pathology Diagnosis",
         primaryLanguage: "Python / AI",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "AI-driven leaf disease classification across commercial and industrial agricultural crops",
           "Predictive treatment protocol recommendations linked directly to detected symptoms"
@@ -357,7 +357,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Autonomous Agent Orchestration",
         primaryLanguage: "Python",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Constructed autonomous research agents delegating query decomposition and web scraping",
           "Integrated Tavily Search API for targeted factual web retrieval and verification",
@@ -378,7 +378,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Real-Time Interactive Bidding Engine",
         primaryLanguage: "JavaScript",
         stars: 2,
-        liveUrl: "https://football-auction-uak7.onrender.com/",
+        liveUrl: "https://football-auction-three.vercel.app/",
         keyImplementations: [
           "Authored 350K+ lines of responsive client logic and player parsing algorithms",
           "Implemented dynamic countdown timers, sound fx triggers, and multi-team roster state",
@@ -391,7 +391,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Interactive Client & PWA Logic",
         primaryLanguage: "JavaScript",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Implemented client-side camera streaming, image upload drag-and-drop, and PWA service worker (sw.js)",
           "Interactive diagnostic charting and symptom inspection views"
@@ -411,7 +411,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Live Multiplayer Auction Server",
         primaryLanguage: "JavaScript / Node.js",
         stars: 2,
-        liveUrl: "https://football-auction-uak7.onrender.com/",
+        liveUrl: "https://football-auction-three.vercel.app/",
         keyImplementations: [
           "Engineered Node.js server.js synchronizing real-time auction bidding across multiple connected clients",
           "Managed atomic bid submission locks preventing race conditions during final countdown seconds",
@@ -489,7 +489,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Stadium Theme & Sound Responsive Styling",
         primaryLanguage: "HTML / CSS",
         stars: 2,
-        liveUrl: "https://football-auction-uak7.onrender.com/",
+        liveUrl: "https://football-auction-three.vercel.app/",
         keyImplementations: [
           "Authored 38K+ lines of custom CSS establishing high-contrast neon stadium lighting",
           "Responsive player card grid layouts and audio feedback visualizers"
@@ -501,7 +501,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Agricultural Dashboard UI & PWA Templates",
         primaryLanguage: "HTML / CSS",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Engineered 190K+ lines of custom CSS and semantic HTML templates for field inspections",
           "Full mobile-friendly touch responsiveness designed for outdoor sunlight legibility"
@@ -553,7 +553,7 @@ export const SKILLS: SkillItem[] = [
     name: "Docker & DevOps",
     category: "Tools & Architecture",
     level: "Proficient",
-    highlight: "Multi-stage container builds, Docker Compose, cloud environment isolation, Render configuration",
+    highlight: "Multi-stage container builds, Docker Compose, cloud environment isolation, Vercel & cloud CI/CD",
     gitWorks: [
       {
         repoName: "KishanHP1808/crop-disease-detection",
@@ -561,10 +561,10 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Containerization & Cloud Deploy",
         primaryLanguage: "Dockerfile / YAML",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Authored production Dockerfile and docker-compose.yml for reproducible Django builds",
-          "Configured Render automated continuous deployment pipeline (render.yaml)"
+          "Configured Vercel continuous deployment pipeline (vercel.json)"
         ]
       },
       {
@@ -573,10 +573,10 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Microservice Container Runtime",
         primaryLanguage: "Dockerfile / YAML",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Configured optimized Python Docker container runtime with cached dependencies",
-          "Deployed Render web service with environment isolation for LLM search credentials"
+          "Deployed Vercel web service with environment isolation for LLM search credentials"
         ]
       }
     ]
@@ -633,7 +633,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Agricultural REST Endpoints",
         primaryLanguage: "Python / DRF",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Constructed modular REST endpoints for crop disease diagnosis and treatments",
           "Integrated database queries with serialized JSON response schemas"
@@ -645,7 +645,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Async Search & Report Endpoints",
         primaryLanguage: "Python / FastAPI",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Streamed REST query routes with background task dispatching for automated report generation",
           "Robust HTTP error formatting and input sanitization"
@@ -665,7 +665,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Stadium Atmosphere UI/UX Design",
         primaryLanguage: "UI/UX & CSS",
         stars: 2,
-        liveUrl: "https://football-auction-uak7.onrender.com/",
+        liveUrl: "https://football-auction-three.vercel.app/",
         keyImplementations: [
           "Designed high-adrenaline stadium auction experience with visual countdown tension",
           "Ergonomic budget displays and live roster chemistry metrics"
@@ -677,7 +677,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Distraction-Free Research UX",
         primaryLanguage: "UI/UX & HTML/CSS",
         stars: 1,
-        liveUrl: "https://personal-research-assistant-vzr7.onrender.com/",
+        liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
         keyImplementations: [
           "Engineered cognitive-load minimizing academic reading layout",
           "Instant citation inspectability and exportable clean document formats"
@@ -716,7 +716,7 @@ export const SKILLS: SkillItem[] = [
         roleOrUsage: "Mobile-First Field Usability",
         primaryLanguage: "Responsive Design",
         stars: 1,
-        liveUrl: "https://agri-guard-yw1o.onrender.com",
+        liveUrl: "https://agri-guard-mocha.vercel.app/",
         keyImplementations: [
           "Engineered touch-first mobile layouts for field farmers under bright outdoor glare",
           "Adaptive cards, camera viewport scaling, and progressive web app responsive views"
@@ -807,7 +807,7 @@ export const CERTIFICATES: Certificate[] = [
     credentialId: "HCKR-FS-910482",
     credentialUrl: "https://www.linkedin.com/in/kishan-h-p-9766063b3",
     category: "Full Stack & Cloud",
-    skills: ["Node.js", "Python / Django", "REST APIs", "PostgreSQL", "WebSocket", "Render & Cloud Infrastructure"],
+    skills: ["Node.js", "Python / Django", "REST APIs", "PostgreSQL", "WebSocket", "Vercel & Cloud Infrastructure"],
     description: "Rigorous verification of full-stack system design, database modeling, secure JWT authentication, real-time WebSocket communication, and CI/CD deployment pipelines.",
     badge: "GOLD BADGE"
   },

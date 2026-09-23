@@ -94,10 +94,14 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                           <span className="bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-[#00f0ff] font-semibold">
                             PROJECT {project.number}
                           </span>
-                          {project.liveUrl?.includes('onrender.com') && (
+                          {project.liveUrl && (
                             <span className="hidden sm:flex items-center gap-1.5 bg-cyan-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-500/30 text-[#00f0ff] text-[10px] font-mono">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-ping" />
-                              DEPLOYED ON RENDER
+                              {project.liveUrl.includes('vercel.app')
+                                ? 'DEPLOYED ON VERCEL'
+                                : project.liveUrl.includes('onrender.com')
+                                ? 'DEPLOYED ON RENDER'
+                                : 'LIVE PRODUCTION'}
                             </span>
                           )}
                         </div>

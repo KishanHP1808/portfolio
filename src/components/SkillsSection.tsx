@@ -18,6 +18,28 @@ import {
 import { SKILLS } from '../data/portfolioData';
 import { SkillItem, GitWork } from '../types';
 
+interface GitHubStats {
+  username: string;
+  avatar_url?: string;
+  public_repos: number;
+  followers: number;
+  following: number;
+  html_url: string;
+  bio: string;
+  authenticated: boolean;
+  repos: Array<{
+    id: number;
+    name: string;
+    description: string;
+    html_url: string;
+    homepage: string;
+    stargazers_count: number;
+    forks_count: number;
+    language: string;
+    updated_at: string;
+  }>;
+}
+
 interface SkillsSectionProps {
   onHoverAction?: (text: string) => void;
   onHoverEnd?: () => void;
@@ -32,7 +54,48 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [inspectModalSkill, setInspectModalSkill] = useState<SkillItem | null>(null);
   const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
+  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
+  const [githubLoading, setGithubLoading] = useState<boolean>(false);
   const gitWorkSectionRef = useRef<HTMLDivElement>(null);
+
+  // Close skill inspection modal on Escape or close-all-modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && inspectModalSkill) {
+        setInspectModalSkill(null);
+      }
+    };
+    const handleCloseAll = () => setInspectModalSkill(null);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('close-all-modals', handleCloseAll);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('close-all-modals', handleCloseAll);
+    };
+  }, [inspectModalSkill]);
+
+  // Fetch real-time GitHub stats via server proxy
+  useEffect(() => {
+    let isMounted = true;
+    setGithubLoading(true);
+    fetch('/api/github-stats')
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data) {
+          setGithubStats(data);
+        }
+      })
+      .catch((err) => console.warn('GitHub stats fetch notice:', err))
+      .finally(() => {
+        if (isMounted) setGithubLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const categories = ['ALL', 'Frontend', 'Backend', 'AI & ML', 'Tools & Architecture', 'Design'];
 
@@ -229,13 +292,19 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
             className="mt-10 pt-8 border-t border-white/10 relative"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-300">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-300">
                 <FolderGit2 className="w-4 h-4 text-[#00f0ff]" />
                 <span className="text-white font-semibold">
                   WORK ON GITHUB FOR {activeSkill.name.toUpperCase()}
                 </span>
                 <span className="text-neutral-500">//</span>
                 <span className="text-neutral-400">ACCOUNT: KishanHP1808</span>
+                {githubStats && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[#00f0ff] text-[10px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-pulse" />
+                    <span>{githubStats.public_repos} PUBLIC REPOS • {githubStats.followers} FOLLOWERS</span>
+                  </span>
+                )}
               </div>
               <span className="text-[11px] font-mono text-neutral-500">
                 Click any repository or link below to inspect code on GitHub

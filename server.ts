@@ -26,6 +26,49 @@ function getAi(): GoogleGenAI {
   return aiClient;
 }
 
+/**
+ * Call NVIDIA NIM API (OpenAI-compatible) using NVIDIA_API_KEY
+ */
+async function callNvidiaAI(messages: Array<{ role: string; content: string }>): Promise<string> {
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  if (!nvidiaKey) {
+    throw new Error('NVIDIA_API_KEY environment variable is not configured');
+  }
+
+  const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${nvidiaKey}`,
+    },
+    body: JSON.stringify({
+      model: 'meta/llama-3.3-70b-instruct',
+      messages: [
+        { role: 'system', content: KISHAN_SYSTEM_INSTRUCTION },
+        ...messages,
+      ],
+      temperature: 0.6,
+      max_tokens: 1024,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`NVIDIA API responded with ${response.status}: ${errorBody}`);
+  }
+
+  const json = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+
+  const text = json.choices?.[0]?.message?.content;
+  if (!text) {
+    throw new Error('NVIDIA API returned empty response');
+  }
+
+  return text;
+}
+
 const KISHAN_SYSTEM_INSTRUCTION = `You are "Thunder AI" (also known as Tunder AI), an elite cybernetic Research Agent and Interactive Technical Intelligence Assistant built specifically into the digital portfolio of Kishan H.P.
 
 KISHAN H.P. PROFILE:
@@ -38,21 +81,21 @@ KISHAN H.P. PROFILE:
 - Philosophy: "I build digital experiences where design, technology, and interaction meet." He rejects sluggish UI and crafts visceral, 120FPS interfaces with cinematic pacing and performance-first architecture.
 
 KEY RESEARCH AGENT & PROJECTS:
-1. Personal Research Assistant (AI Document Intelligence & Retrieval):
-   - Tech: FastAPI, Python, LangChain, React, Pydantic, Vector Embeddings.
-   - Live URL: https://personal-research-assistant-vzr7.onrender.com/
+1. AI Assistant (Autonomous AI Research & Document Intelligence Engine):
+   - Tech: FastAPI, Python, LangChain, React, Pydantic, Vector Embeddings, Vercel Deployment.
+   - Live URL: https://ai-assistant-orcin-alpha.vercel.app/
    - GitHub: https://github.com/KishanHP1808/Personal-Research-Assistant
-   - Architecture: Designed asynchronous API streaming research document queries with sub-second token delivery, multi-document synthesis workflows, and automated executive summary generation.
+   - Architecture: Designed asynchronous API streaming research document queries with sub-second token delivery, multi-document synthesis workflows, and automated executive summary generation. Deployed on Vercel.
 2. AgriGuard (Smart Crop Pathology Detection & Advisory):
-   - Tech: React, TypeScript, Python / Django, AI Diagnostics, Tailwind CSS.
-   - Live URL: https://agri-guard-yw1o.onrender.com/
+   - Tech: React, TypeScript, Python / Django, AI Diagnostics, Tailwind CSS, Vercel Deployment.
+   - Live URL: https://agri-guard-mocha.vercel.app/
    - GitHub: https://github.com/KishanHP1808/crop-disease-detection
-   - Highlights: Sub-second leaf pathology diagnosis, localized market metrics, weather telemetry, and high-conversion farmer interface.
+   - Highlights: Sub-second leaf pathology diagnosis, localized market metrics, weather telemetry, and high-conversion farmer interface. Deployed on Vercel.
 3. Football Auction System (Real-Time Synchronized Bidding Engine):
-   - Tech: React, Django Channels, WebSockets, Redis Pub/Sub, Tailwind CSS.
-   - Live URL: https://football-auction-uak7.onrender.com/
+   - Tech: React, Django Channels, WebSockets, Redis Pub/Sub, Tailwind CSS, Vercel Deployment.
+   - Live URL: https://football-auction-three.vercel.app/
    - GitHub: https://github.com/KishanHP1808/football-auction
-   - Highlights: Atomic bid validation resolving race conditions with Redis locks, sub-50ms live spectator updates, and 4K stadium UI.
+   - Highlights: Atomic bid validation resolving race conditions with Redis locks, sub-50ms live spectator updates, and 4K stadium UI. Deployed on Vercel.
 4. SmartAttend (Facial Recognition & Attendance Automation):
    - Tech: Python, OpenCV, Tkinter/Web UI, SQLite.
    - GitHub: https://github.com/KishanHP1808/Smart-attend
@@ -78,37 +121,66 @@ app.post('/api/thunder-ai', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Attempt Gemini Generation
-    const ai = getAi();
-    
-    // Format conversation history if provided
-    let prompt = message;
+    const messagesHistory: Array<{ role: string; content: string }> = [];
     if (Array.isArray(history) && history.length > 0) {
-      const recentHistory = history.slice(-6).map((h: { role: string; content: string }) => 
-        `${h.role === 'user' ? 'User' : 'Thunder AI'}: ${h.content}`
-      ).join('\n');
-      prompt = `Conversation context:\n${recentHistory}\n\nUser: ${message}\nThunder AI:`;
+      history.slice(-6).forEach((h: { role: string; content: string }) => {
+        messagesHistory.push({
+          role: h.role === 'assistant' ? 'assistant' : 'user',
+          content: h.content,
+        });
+      });
+    }
+    messagesHistory.push({ role: 'user', content: message });
+
+    // 1. If NVIDIA_API_KEY is configured, try NVIDIA NIM first
+    if (process.env.NVIDIA_API_KEY) {
+      try {
+        const reply = await callNvidiaAI(messagesHistory);
+        return res.json({ reply, model: 'nvidia-meta/llama-3.3-70b-instruct', status: 'success' });
+      } catch (nvidiaErr: unknown) {
+        console.warn('NVIDIA NIM API call failed, falling back to Gemini:', (nvidiaErr as Error).message);
+      }
     }
 
-    const generatePromise = ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-      config: {
-        systemInstruction: KISHAN_SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-      },
-    });
+    // 2. Attempt Gemini Generation
+    try {
+      const ai = getAi();
+      
+      let prompt = message;
+      if (Array.isArray(history) && history.length > 0) {
+        const recentHistory = history.slice(-6).map((h: { role: string; content: string }) => 
+          `${h.role === 'user' ? 'User' : 'Thunder AI'}: ${h.content}`
+        ).join('\n');
+        prompt = `Conversation context:\n${recentHistory}\n\nUser: ${message}\nThunder AI:`;
+      }
 
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('AI generation timed out')), 7500);
-    });
+      const generatePromise = ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+        config: {
+          systemInstruction: KISHAN_SYSTEM_INSTRUCTION,
+          temperature: 0.7,
+        },
+      });
 
-    const response = (await Promise.race([generatePromise, timeoutPromise])) as {
-      text?: string;
-    };
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('AI generation timed out')), 7500);
+      });
 
-    const reply = response.text || 'Thunder AI core operational. Standing by for queries.';
-    return res.json({ reply, model: 'gemini-3.8-flash', status: 'success' });
+      const response = (await Promise.race([generatePromise, timeoutPromise])) as {
+        text?: string;
+      };
+
+      const reply = response.text || 'Thunder AI core operational. Standing by for queries.';
+      return res.json({ reply, model: 'gemini-3.8-flash', status: 'success' });
+    } catch (geminiErr: unknown) {
+      // If Gemini failed and NVIDIA wasn't tried yet, check if NVIDIA_API_KEY is available
+      if (process.env.NVIDIA_API_KEY) {
+        const reply = await callNvidiaAI(messagesHistory);
+        return res.json({ reply, model: 'nvidia-meta/llama-3.3-70b-instruct', status: 'success' });
+      }
+      throw geminiErr;
+    }
   } catch (error: unknown) {
     const err = error as Error;
     console.error('Thunder AI API Error:', err.message);
@@ -374,6 +446,130 @@ app.get('/api/inquiries', (_req, res) => {
     total: INQUIRY_LOGS.length,
     inquiries: INQUIRY_LOGS,
   });
+});
+
+/**
+ * GitHub API Proxy Endpoint
+ * Uses GITHUB_TOKEN (Personal Access Token) if available, with in-memory caching to avoid rate limits
+ */
+let gitHubCache: { data: unknown; timestamp: number } | null = null;
+const GITHUB_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+app.get('/api/github-stats', async (_req, res) => {
+  try {
+    const now = Date.now();
+    if (gitHubCache && now - gitHubCache.timestamp < GITHUB_CACHE_DURATION) {
+      return res.json(gitHubCache.data);
+    }
+
+    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_PAT;
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'KishanHP-Portfolio-App',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const [userRes, reposRes] = await Promise.all([
+      fetch('https://api.github.com/users/KishanHP1808', { headers }),
+      fetch('https://api.github.com/users/KishanHP1808/repos?sort=updated&per_page=12', { headers }),
+    ]);
+
+    if (!userRes.ok) {
+      // Return cached or fallback structure
+      return res.json({
+        username: 'KishanHP1808',
+        public_repos: 14,
+        followers: 10,
+        following: 12,
+        html_url: 'https://github.com/KishanHP1808',
+        bio: 'Frontend Developer & UI/UX Designer',
+        repos: [],
+        authenticated: Boolean(token),
+      });
+    }
+
+    const userData = (await userRes.json()) as {
+      login: string;
+      public_repos: number;
+      followers: number;
+      following: number;
+      html_url: string;
+      avatar_url: string;
+      bio: string;
+    };
+
+    let reposList: Array<{
+      id: number;
+      name: string;
+      description: string;
+      html_url: string;
+      homepage: string;
+      stargazers_count: number;
+      forks_count: number;
+      language: string;
+      updated_at: string;
+    }> = [];
+
+    if (reposRes.ok) {
+      const rawRepos = (await reposRes.json()) as Array<{
+        id: number;
+        name: string;
+        description: string;
+        html_url: string;
+        homepage: string;
+        stargazers_count: number;
+        forks_count: number;
+        language: string;
+        updated_at: string;
+        fork: boolean;
+      }>;
+      reposList = rawRepos
+        .filter((r) => !r.fork)
+        .slice(0, 8)
+        .map((r) => ({
+          id: r.id,
+          name: r.name,
+          description: r.description || 'Full-stack & frontend repository by Kishan H.P.',
+          html_url: r.html_url,
+          homepage: r.homepage || '',
+          stargazers_count: r.stargazers_count || 0,
+          forks_count: r.forks_count || 0,
+          language: r.language || 'TypeScript',
+          updated_at: r.updated_at,
+        }));
+    }
+
+    const result = {
+      username: userData.login,
+      avatar_url: userData.avatar_url,
+      public_repos: userData.public_repos,
+      followers: userData.followers,
+      following: userData.following,
+      html_url: userData.html_url,
+      bio: userData.bio || 'Frontend Developer & UI/UX Designer',
+      repos: reposList,
+      authenticated: Boolean(token),
+      timestamp: new Date().toISOString(),
+    };
+
+    gitHubCache = { data: result, timestamp: now };
+    return res.json(result);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('GitHub API error:', error.message);
+    return res.json({
+      username: 'KishanHP1808',
+      public_repos: 14,
+      followers: 10,
+      following: 12,
+      html_url: 'https://github.com/KishanHP1808',
+      bio: 'Frontend Developer & UI/UX Designer',
+      repos: [],
+      authenticated: Boolean(process.env.GITHUB_TOKEN),
+    });
+  }
 });
 
 

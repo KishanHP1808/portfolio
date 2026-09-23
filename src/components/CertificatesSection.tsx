@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Award,
@@ -55,6 +55,24 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
     setIframeLoading(true);
     setIframeKey((prev) => prev + 1);
   };
+
+  // Close certificate modal on Escape or close-all-modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedCert) {
+        setSelectedCert(null);
+      }
+    };
+    const handleCloseAll = () => setSelectedCert(null);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('close-all-modals', handleCloseAll);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('close-all-modals', handleCloseAll);
+    };
+  }, [selectedCert]);
 
   return (
     <section

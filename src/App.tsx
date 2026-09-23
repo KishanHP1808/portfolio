@@ -21,6 +21,7 @@ import { ThunderAiBot } from './components/ThunderAiBot';
 import { ResumeModal } from './components/ResumeModal';
 import { TalkToHimModal } from './components/TalkTogetherModal';
 import { AuthProfileModal } from './components/AuthProfileModal';
+import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { Project, CursorState } from './types';
 
 export default function App() {
@@ -52,6 +53,31 @@ export default function App() {
       window.removeEventListener('open-resume', handleOpenResume);
       window.removeEventListener('open-auth-modal', handleOpenAuth);
     };
+  }, []);
+
+  // Global Keyboard Shortcuts: 'Esc' to close any modal, 'Command+K' / 'Ctrl+K' to trigger Thunder AI bot
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command+K or Ctrl+K triggers Thunder AI bot
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('toggle-thunder-ai'));
+        return;
+      }
+
+      // Escape key closes any active modal across the portfolio
+      if (e.key === 'Escape') {
+        setSelectedProject(null);
+        setResumeOpen(false);
+        setTalkToHimOpen(false);
+        setAuthModalOpen(false);
+        window.dispatchEvent(new CustomEvent('close-thunder-ai'));
+        window.dispatchEvent(new CustomEvent('close-all-modals'));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Initialize Lenis smooth scroll for camera-like scroll choreography (optimized for 180 FPS)
@@ -110,6 +136,9 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-[#ededed] selection:bg-[#00f0ff] selection:text-black font-sans antialiased overflow-x-hidden">
+      {/* Thin, Fixed Glowing Scroll Progress Bar */}
+      <ScrollProgressBar />
+
       {/* Interactive Custom Cursor */}
       <CustomCursor cursorState={cursorState} />
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare, User, LogIn } from 'lucide-react';
+import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare, User, LogIn, Zap } from 'lucide-react';
 import { PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
 import { SoundDesign } from './SoundDesign';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
@@ -407,6 +407,38 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </div>
                     </div>
                     <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </button>
+
+                  {/* Thunder AI Interactive Assistant Option */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      window.dispatchEvent(new CustomEvent('open-thunder-ai'));
+                    }}
+                    onMouseEnter={() => onHoverAction?.('THUNDER AI')}
+                    onMouseLeave={onHoverEnd}
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/30 hover:border-[#00f0ff] hover:bg-[#00f0ff]/20 text-white transition-all duration-200 cursor-pointer shadow-[0_0_20px_rgba(0,240,255,0.15)] group text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-[#00f0ff]/20 text-[#00f0ff] flex items-center justify-center shrink-0">
+                        <Zap className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-display text-base font-bold text-white group-hover:text-[#00f0ff] transition-colors">
+                            THUNDER AI BOT
+                          </span>
+                          <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-cyan-300 text-[9px] font-mono border border-cyan-400/30">
+                            ⌘K
+                          </kbd>
+                        </div>
+                        <div className="text-[10px] font-mono text-neutral-400">
+                          Autonomous Technical Research Agent
+                        </div>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-[#00f0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </button>
 
                   <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-[#00f0ff]/30 transition-colors">

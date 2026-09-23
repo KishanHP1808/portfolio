@@ -134,8 +134,8 @@ export const generateClientResumePDF = (): void => {
   const selectedProjects = [
     {
       title: 'AgriGuard — Smart Crop Disease Detection & Agricultural Advisory',
-      tech: 'React, TypeScript, Python / Django, AI Diagnostics, Tailwind CSS',
-      live: 'https://agri-guard-yw1o.onrender.com',
+      tech: 'React, TypeScript, Python / Django, AI Diagnostics, Tailwind CSS, Vercel',
+      live: 'https://agri-guard-mocha.vercel.app/',
       github: 'github.com/KishanHP1808/crop-disease-detection',
       points: [
         'Engineered an automated crop pathology detection web platform serving diagnostic insights with an ultra-responsive mobile interface.',
@@ -145,8 +145,8 @@ export const generateClientResumePDF = (): void => {
     },
     {
       title: 'Football Auction System — Real-Time Bidding & Valuation Arena',
-      tech: 'React, Django Channels, WebSockets, Redis, Tailwind CSS',
-      live: 'https://football-auction-uak7.onrender.com',
+      tech: 'React, Django Channels, WebSockets, Redis, Tailwind CSS, Vercel',
+      live: 'https://football-auction-three.vercel.app/',
       github: 'github.com/KishanHP1808/football-auction',
       points: [
         'Architected a synchronized live auction engine with real-time countdown clocks, atomic bid validation, and dynamic team budget tracking.',
@@ -164,9 +164,9 @@ export const generateClientResumePDF = (): void => {
       ]
     },
     {
-      title: 'Personal Research Assistant — AI Document Intelligence & Retrieval',
-      tech: 'FastAPI, Python, LangChain, React, Pydantic',
-      live: 'https://personal-research-assistant-vzr7.onrender.com/',
+      title: 'AI Assistant — Autonomous AI Research & Document Intelligence',
+      tech: 'FastAPI, Python, LangChain, React, Pydantic, Vercel',
+      live: 'https://ai-assistant-orcin-alpha.vercel.app/',
       github: 'github.com/KishanHP1808/Personal-Research-Assistant',
       points: [
         'Designed an asynchronous API streaming research queries with sub-second token delivery.',

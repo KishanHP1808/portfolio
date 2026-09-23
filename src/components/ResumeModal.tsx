@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Download,
@@ -85,6 +85,17 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
   };
 
   const activePdfHref = customPdfUrl || '/Kishan_HP_Resume.pdf';
+
+  // Listen for Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
@@ -262,7 +273,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
                       </div>
                       <div className="text-neutral-400 leading-relaxed">
                         Node.js, Express, Python, Django 5, FastAPI, REST APIs, WebSockets, Redis,
-                        Docker, Git/GitHub, CI/CD Pipelines, Render.
+                        Docker, Git/GitHub, CI/CD Pipelines, Vercel & Cloud.
                       </div>
                     </div>
                   </div>

@@ -33,7 +33,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 
 I am **Thunder AI**, the autonomous technical intelligence & research assistant engineered into Kishan H.P.'s portfolio.
 
-I possess complete architectural knowledge of Kishan's engineering work, including his **Personal Research Assistant** AI platform, real-time WebSocket systems, **LeetCode (@Kishan_H_P)** algorithms, and 120FPS frontend craftsmanship.
+I possess complete architectural knowledge of Kishan's engineering work, including his **AI Assistant** platform, real-time WebSocket systems, **LeetCode (@Kishan_H_P)** algorithms, and 120FPS frontend craftsmanship.
 
 What would you like to investigate?`,
   },
@@ -41,9 +41,9 @@ What would you like to investigate?`,
 
 const PRESET_PROMPTS = [
   {
-    label: 'Personal Research Assistant',
+    label: 'AI Assistant',
     icon: Brain,
-    prompt: 'Explain Kishan’s Personal Research Assistant project and how its AI retrieval architecture works.',
+    prompt: 'Explain Kishan’s AI Assistant project and how its AI retrieval and multi-document architecture works.',
   },
   {
     label: 'Frontend & 120FPS Motion',
@@ -64,14 +64,15 @@ const PRESET_PROMPTS = [
 
 // Offline / instantaneous semantic responses if server API key is unavailable
 const LOCAL_KNOWLEDGE_BASE: Record<string, string> = {
-  research: `🔬 **Personal Research Assistant — AI Document Intelligence & Retrieval**
+  research: `🔬 **AI Assistant — Autonomous AI Research & Document Intelligence**
 
 Kishan engineered this production-grade document intelligence engine to solve unstructured knowledge synthesis:
 
 - **Asynchronous FastAPI Engine**: Streams token payloads with sub-second time-to-first-token (TTFT).
 - **Multi-Document Synthesis**: Constructs vector embedding pipelines using LangChain to correlate across multiple research papers, technical specs, and whitepapers.
 - **Frontend Synergy**: Built with a reactive React interface that renders citations, executive summaries, and comparative analysis cards.
-- **Live Demo**: [personal-research-assistant-vzr7.onrender.com](https://personal-research-assistant-vzr7.onrender.com/)
+- **Deployment**: Deployed on Vercel with high-availability edge routing.
+- **Live Demo**: [ai-assistant-orcin-alpha.vercel.app](https://ai-assistant-orcin-alpha.vercel.app/)
 - **GitHub Repository**: [github.com/KishanHP1808/Personal-Research-Assistant](https://github.com/KishanHP1808/Personal-Research-Assistant)`,
 
   frontend: `⚡ **Kishan's Frontend Engineering Philosophy**
@@ -96,7 +97,7 @@ Kishan actively hones algorithmic problem-solving at [leetcode.com/u/Kishan_H_P]
 Kishan combines two rare superpowers: **Elite Visual Taste** and **Hardcore Systems Engineering**:
 
 1. **Immediate Productivity**: Fluent across React 19, TypeScript, Next.js, Python, Django 5, WebSockets, and modern design systems in Figma.
-2. **Proven Full-Stack Shipping**: Created and deployed real-world systems like **AgriGuard** (AI Crop Pathology), **Football Auction** (real-time Redis pub/sub locks), and **Personal Research Assistant**.
+2. **Proven Full-Stack Shipping**: Created and deployed real-world systems like **AgriGuard** (AI Crop Pathology on Vercel), **Football Auction** (real-time Redis pub/sub locks on Vercel), and **AI Assistant** (autonomous research agent on Vercel).
 3. **High Standard of Craftsmanship**: He does not build cookie-cutter templates. Every project features tailored physics, bulletproof state handling, and meticulous attention to detail.
 4. **Availability**: Ready for high-impact frontend and full-stack engineering roles. Reach him directly at **kishanhp18@gmail.com**!`,
 
@@ -104,10 +105,10 @@ Kishan combines two rare superpowers: **Elite Visual Taste** and **Hardcore Syst
 
 Kishan H.P is a Frontend Developer, UI/UX Designer, and Full Stack Web Developer based in Mysuru, Karnataka, India.
 
-- **Signature Projects**:
-  - *Personal Research Assistant* (FastAPI, LangChain, React)
-  - *AgriGuard* (AI Crop Pathology & Advisory)
-  - *Football Auction Engine* (Real-Time WebSockets & Redis locks)
+- **Signature Projects (Live on Vercel)**:
+  - *AgriGuard* (AI Crop Pathology & Advisory): https://agri-guard-mocha.vercel.app/
+  - *Football Auction Engine* (Real-Time WebSockets & Redis locks): https://football-auction-three.vercel.app/
+  - *AI Assistant* (FastAPI, LangChain, React, Autonomous Intelligence): https://ai-assistant-orcin-alpha.vercel.app/
 - **Competitive Profile**: LeetCode (@Kishan_H_P), GitHub (@KishanHP1808)
 - **Direct Reach**: kishanhp18@gmail.com`,
 };
@@ -136,6 +137,68 @@ export const ThunderAiBot: React.FC<ThunderAiBotProps> = ({ onHoverAction, onHov
   const [isLoading, setIsLoading] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Global listeners for Command+K and custom trigger events
+  useEffect(() => {
+    const handleToggle = () => {
+      setIsOpen((prev) => {
+        const next = !prev;
+        if (next) {
+          playCyberChirp(900, 0.08);
+          setTimeout(() => inputRef.current?.focus(), 150);
+        }
+        return next;
+      });
+    };
+
+    const handleOpen = () => {
+      setIsOpen(true);
+      playCyberChirp(900, 0.08);
+      setTimeout(() => inputRef.current?.focus(), 150);
+    };
+
+    const handleClose = () => {
+      setIsOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command+K or Ctrl+K triggers Thunder AI
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        handleToggle();
+        return;
+      }
+
+      // Escape closes Thunder AI when open
+      if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('open-thunder-ai', handleOpen);
+    window.addEventListener('toggle-thunder-ai', handleToggle);
+    window.addEventListener('close-thunder-ai', handleClose);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('open-thunder-ai', handleOpen);
+      window.removeEventListener('toggle-thunder-ai', handleToggle);
+      window.removeEventListener('close-thunder-ai', handleClose);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  // Focus input automatically whenever drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Play procedural cybernetic chirp SFX
   const playCyberChirp = (freq = 880, duration = 0.08) => {
@@ -293,6 +356,9 @@ export const ThunderAiBot: React.FC<ThunderAiBotProps> = ({ onHoverAction, onHov
                 THUNDER AI
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-pulse" />
+              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono bg-white/10 text-cyan-300 border border-cyan-400/30 ml-1">
+                ⌘K
+              </kbd>
             </div>
             <span className="text-[9px] font-mono text-neutral-400 tracking-widest uppercase">
               RESEARCH AGENT
@@ -362,9 +428,10 @@ export const ThunderAiBot: React.FC<ThunderAiBotProps> = ({ onHoverAction, onHov
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  title="Close Terminal"
-                  className="p-1.5 rounded-lg border border-white/10 hover:border-red-400/50 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+                  title="Close Terminal (Esc)"
+                  className="p-1.5 rounded-lg border border-white/10 hover:border-red-400/50 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1"
                 >
+                  <kbd className="hidden sm:inline-block text-[8px] font-mono text-neutral-500">ESC</kbd>
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -445,6 +512,7 @@ export const ThunderAiBot: React.FC<ThunderAiBotProps> = ({ onHoverAction, onHov
                 className="relative flex items-center gap-2"
               >
                 <input
+                  ref={inputRef}
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
