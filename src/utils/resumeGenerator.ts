@@ -108,7 +108,7 @@ export const generateClientResumePDF = (): void => {
     },
     {
       label: 'DevOps & Tooling:',
-      items: 'Git, GitHub, Docker, CI/CD Actions, Render, Vercel, Vite, Linux Shell, Redis'
+      items: 'Git, GitHub, Docker, CI/CD Actions, Vercel, Cloud Infrastructure, Vite, Linux Shell, Redis'
     }
   ];
 

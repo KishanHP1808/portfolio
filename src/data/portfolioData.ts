@@ -799,7 +799,7 @@ export const CERTIFICATES: Certificate[] = [
     badge: "INDUSTRY STANDARD"
   },
   {
-    id: "fullstack-render",
+    id: "fullstack-cloud",
     number: "03",
     title: "Full Stack Web Engineering & Cloud Deployment",
     issuer: "HackerRank & freeCodeCamp",
