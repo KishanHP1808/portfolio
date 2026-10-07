@@ -37,7 +37,7 @@ export const ExperienceTimeline: React.FC<ExperienceTimelineProps> = ({
           </div>
 
           <div className="font-mono text-xs text-neutral-400">
-            <span>CAREER MILESTONES [2025 — 2026]</span>
+            <span>CAREER MILESTONES [2025 - 2026]</span>
           </div>
         </motion.div>
 

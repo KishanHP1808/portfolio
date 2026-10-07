@@ -291,7 +291,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
                     <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="font-display text-base text-white uppercase">
-                          AGRIGUARD — CROP DISEASE DETECTION PLATFORM
+                          AGRIGUARD - CROP DISEASE DETECTION PLATFORM
                         </div>
                         <span className="font-mono text-[11px] text-[#00f0ff]">
                           React • TypeScript • Python / Django
@@ -308,7 +308,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
                     <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="font-display text-base text-white uppercase">
-                          FOOTBALL AUCTION — REAL-TIME BIDDING ARENA
+                          FOOTBALL AUCTION - REAL-TIME BIDDING ARENA
                         </div>
                         <span className="font-mono text-[11px] text-[#00f0ff]">
                           React • WebSockets • Redis • Django
@@ -324,7 +324,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
                     <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="font-display text-base text-white uppercase">
-                          SMARTATTEND — BIOMETRIC FACIAL VERIFICATION
+                          SMARTATTEND - BIOMETRIC FACIAL VERIFICATION
                         </div>
                         <span className="font-mono text-[11px] text-[#00f0ff]">
                           Python • OpenCV • SQLite

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <radialGradient id="bgPlate" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#05192d" />
+      <stop offset="100%" stop-color="#020813" />
+    </radialGradient>
+  </defs>
+  <!-- Background Container -->
+  <rect width="64" height="64" rx="16" fill="url(#bgPlate)" stroke="#00f0ff" stroke-width="2" stroke-opacity="0.35" />
+  
+  <!-- Subtle Grid Accent -->
+  <line x1="12" y1="32" x2="52" y2="32" stroke="#00f0ff" stroke-opacity="0.1" stroke-width="1" stroke-dasharray="2 2" />
+  <line x1="32" y1="12" x2="32" y2="52" stroke="#00f0ff" stroke-opacity="0.1" stroke-width="1" stroke-dasharray="2 2" />
+
+  <!-- Stylized Geometric 'K' for Kishan -->
+  <!-- Vertical Stem -->
+  <path d="M 20 15 L 20 49" stroke="url(#cyanGrad)" stroke-width="5.5" stroke-linecap="round" />
+  
+  <!-- Diagonal Arms -->
+  <path d="M 44 17 L 22 32 L 44 47" stroke="url(#cyanGrad)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Accent Nodes -->
+  <circle cx="20" cy="15" r="2.5" fill="#ffffff" />
+  <circle cx="44" cy="17" r="2.5" fill="#00f0ff" />
+  <circle cx="44" cy="47" r="2.5" fill="#38bdf8" />
+  <circle cx="20" cy="49" r="2.5" fill="#0284c7" />
+</svg>

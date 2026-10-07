@@ -60,7 +60,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
 
         <div className="flex items-baseline gap-4 font-mono text-xs text-neutral-400">
           <span>{isKannada ? 'ಕೇಸ್ ಸ್ಟಡಿಗಳು' : 'CINEMATIC CASE STUDIES'}</span>
-          <span className="text-[#00f0ff]">[01 — {PROJECTS.length.toString().padStart(2, '0')}]</span>
+          <span className="text-[#00f0ff]">[01 - {PROJECTS.length.toString().padStart(2, '0')}]</span>
         </div>
       </motion.div>
 

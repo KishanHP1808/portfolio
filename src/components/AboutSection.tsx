@@ -58,7 +58,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
               {isKannada
                 ? t.about.bio_p2
-                : 'Based in the heritage tech hub of Mysuru, Karnataka, Kishan approaches every interface as both a gallery installation and a precision tool. He rejects the compromise between visual grandeur and runtime velocity, ensuring every layout responds with sub-frame fluidness.'}
+                : 'Based in Mysuru, Karnataka, Kishan develops clean, accessible web applications with modern frontend engineering and thoughtful UI design. He focuses on responsive layouts, fast load speeds, and maintainable TypeScript and Python code.'}
             </p>
 
             {/* Geographical, Academic & Availability Pill */}

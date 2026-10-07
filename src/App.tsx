@@ -18,7 +18,8 @@ import { FloatingBackNavigator } from './components/FloatingBackNavigator';
 import { BackToTopButton } from './components/BackToTopButton';
 import { ElectricThunderCanvas } from './components/ElectricThunderCanvas';
 import { ElectricCursorTrail } from './components/ElectricCursorTrail';
-import { ThunderAiBot } from './components/ThunderAiBot';
+import { TermsAndConditionsModal } from './components/TermsAndConditionsModal';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { ResumeModal } from './components/ResumeModal';
 import { TalkToHimModal } from './components/TalkTogetherModal';
 import { AuthProfileModal } from './components/AuthProfileModal';
@@ -33,48 +34,61 @@ export default function App() {
   const [resumeOpen, setResumeOpen] = useState(false);
   const [talkToHimOpen, setTalkToHimOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [cursorState, setCursorState] = useState<CursorState>({
     text: '',
     active: false,
     variant: 'default',
   });
 
-  // Global listeners for direct modal opening
+  // Global listeners for direct modal opening & URL hash routing
   useEffect(() => {
     const handleOpenTalk = () => setTalkToHimOpen(true);
     const handleOpenResume = () => setResumeOpen(true);
     const handleOpenAuth = () => setAuthModalOpen(true);
+    const handleOpenTerms = () => setTermsOpen(true);
+    const handleOpenPrivacy = () => setPrivacyOpen(true);
 
     window.addEventListener('open-talk-to-him', handleOpenTalk);
     window.addEventListener('open-talk-together', handleOpenTalk);
     window.addEventListener('open-resume', handleOpenResume);
     window.addEventListener('open-auth-modal', handleOpenAuth);
+    window.addEventListener('open-terms-modal', handleOpenTerms);
+    window.addEventListener('open-privacy-modal', handleOpenPrivacy);
+
+    // Check URL hash for direct legal page navigation
+    const checkHash = () => {
+      if (window.location.hash === '#terms' || window.location.hash === '#terms-and-conditions') {
+        setTermsOpen(true);
+      } else if (window.location.hash === '#privacy' || window.location.hash === '#privacy-policy') {
+        setPrivacyOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
 
     return () => {
       window.removeEventListener('open-talk-to-him', handleOpenTalk);
       window.removeEventListener('open-talk-together', handleOpenTalk);
       window.removeEventListener('open-resume', handleOpenResume);
       window.removeEventListener('open-auth-modal', handleOpenAuth);
+      window.removeEventListener('open-terms-modal', handleOpenTerms);
+      window.removeEventListener('open-privacy-modal', handleOpenPrivacy);
+      window.removeEventListener('hashchange', checkHash);
     };
   }, []);
 
-  // Global Keyboard Shortcuts: 'Esc' to close any modal, 'Command+K' / 'Ctrl+K' to trigger Thunder AI bot
+  // Global Keyboard Shortcuts: 'Esc' to close any active modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Command+K or Ctrl+K triggers Thunder AI bot
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        window.dispatchEvent(new CustomEvent('toggle-thunder-ai'));
-        return;
-      }
-
-      // Escape key closes any active modal across the portfolio
       if (e.key === 'Escape') {
         setSelectedProject(null);
         setResumeOpen(false);
         setTalkToHimOpen(false);
         setAuthModalOpen(false);
-        window.dispatchEvent(new CustomEvent('close-thunder-ai'));
+        setTermsOpen(false);
+        setPrivacyOpen(false);
         window.dispatchEvent(new CustomEvent('close-all-modals'));
       }
     };
@@ -246,12 +260,6 @@ export default function App() {
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
         />
-
-        {/* Autonomous Research Agent AI Bot - Thunder AI */}
-        <ThunderAiBot
-          onHoverAction={handleHoverAction}
-          onHoverEnd={handleHoverEnd}
-        />
       </div>
 
       {/* Interactive Case Study Modal Overlay */}
@@ -284,6 +292,18 @@ export default function App() {
         onClose={() => setAuthModalOpen(false)}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
+      />
+
+      {/* Terms & Conditions Modal Overlay */}
+      <TermsAndConditionsModal
+        isOpen={termsOpen}
+        onClose={() => setTermsOpen(false)}
+      />
+
+      {/* Privacy Policy Modal Overlay */}
+      <PrivacyPolicyModal
+        isOpen={privacyOpen}
+        onClose={() => setPrivacyOpen(false)}
       />
     </div>
   );

@@ -133,7 +133,7 @@ export const generateClientResumePDF = (): void => {
 
   const selectedProjects = [
     {
-      title: 'AgriGuard — Smart Crop Disease Detection & Agricultural Advisory',
+      title: 'AgriGuard - Smart Crop Disease Detection & Agricultural Advisory',
       tech: 'React, TypeScript, Python / Django, AI Diagnostics, Tailwind CSS, Vercel',
       live: 'https://agri-guard-mocha.vercel.app/',
       github: 'github.com/KishanHP1808/crop-disease-detection',
@@ -144,7 +144,7 @@ export const generateClientResumePDF = (): void => {
       ]
     },
     {
-      title: 'Football Auction System — Real-Time Bidding & Valuation Arena',
+      title: 'Football Auction System - Real-Time Bidding & Valuation Arena',
       tech: 'React, Django Channels, WebSockets, Redis, Tailwind CSS, Vercel',
       live: 'https://football-auction-three.vercel.app/',
       github: 'github.com/KishanHP1808/football-auction',
@@ -155,7 +155,7 @@ export const generateClientResumePDF = (): void => {
       ]
     },
     {
-      title: 'SmartAttend — Biometric Attendance & Facial Recognition System',
+      title: 'SmartAttend - Biometric Attendance & Facial Recognition System',
       tech: 'Python, OpenCV, Tkinter/Web UI, SQLite',
       github: 'github.com/KishanHP1808/Smart-attend',
       points: [
@@ -164,7 +164,7 @@ export const generateClientResumePDF = (): void => {
       ]
     },
     {
-      title: 'AI Assistant — Autonomous AI Research & Document Intelligence',
+      title: 'AI Assistant - Knowledge Retrieval & Multi-Document Research Engine',
       tech: 'FastAPI, Python, LangChain, React, Pydantic, Vercel',
       live: 'https://ai-assistant-orcin-alpha.vercel.app/',
       github: 'github.com/KishanHP1808/Personal-Research-Assistant',
@@ -216,7 +216,7 @@ export const generateClientResumePDF = (): void => {
     {
       role: 'Full Stack & Advanced Frontend Developer',
       org: 'Creative Digital Labs & Independent Projects',
-      period: '2025 – Present',
+      period: '2025 - Present',
       desc: 'Spearheading modern responsive web applications, architecting real-time WebSocket client systems, and crafting accessible component libraries in React, Next.js, and TypeScript.'
     },
     {

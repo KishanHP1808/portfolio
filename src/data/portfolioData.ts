@@ -21,9 +21,9 @@ export const PERSONAL_INFO = {
     shortName: "MIT Tandavapura",
     url: "https://mitt.edu.in/",
   },
-  heroTagline: "I build digital experiences where design, technology and interaction meet.",
-  aboutHeadline: "I design and build digital experiences that feel as good as they function.",
-  aboutDescription: "KISHAN H.P is a frontend developer, UI/UX designer and full stack web developer based in Mysuru, Karnataka. Bridging the divide between high-fidelity aesthetics and robust engineering, he crafts visceral interfaces with cinematic pacing and performance-first architecture.",
+  heroTagline: "Frontend Developer & UI/UX Designer building fast, responsive web applications and reliable real-time systems.",
+  aboutHeadline: "I build responsive, performance-driven web applications and clean digital interfaces.",
+  aboutDescription: "KISHAN H.P is a frontend developer and UI/UX designer based in Mysuru, Karnataka. He builds responsive web applications, real-time dashboards, and intuitive interfaces using React, TypeScript, Python, and Figma, focusing on clean architecture, strong performance, and genuine usability.",
   socials: {
     github: "https://github.com/KishanHP1808",
     linkedin: "https://www.linkedin.com/in/kishan-h-p-9766063b3",
@@ -63,32 +63,32 @@ export const FOCUS_AREAS = [
   {
     title: "Frontend Development",
     number: "01",
-    desc: "Architecting responsive, high-fps interactive web applications using React, Next.js, and TypeScript with GPU-accelerated motion."
+    desc: "Building fast, accessible, and responsive user interfaces with React, Next.js, and TypeScript, backed by clean state management."
   },
   {
     title: "UI/UX Design",
     number: "02",
-    desc: "Translating ambiguous problem spaces into deliberate design systems, ergonomic wireframes, and high-contrast editorial layouts in Figma."
+    desc: "Designing intuitive user flows, accessible wireframes, and scalable design systems in Figma with clear token structures."
   },
   {
     title: "Web Development",
     number: "03",
-    desc: "Constructing end-to-end full stack solutions powered by Node.js, Python, Django, RESTful endpoints, and relational architectures."
+    desc: "Developing end-to-end full stack web applications with Python, Django, REST APIs, and relational databases."
   },
   {
     title: "Interactive Experiences",
     number: "04",
-    desc: "Orchestrating micro-interactions, canvas shaders, mask transitions, and kinetic typography that command visceral attention."
+    desc: "Implementing smooth transitions, thoughtful micro-interactions, and accessible UI feedback that keeps pages snappy."
   },
   {
     title: "Responsive Design",
     number: "05",
-    desc: "Pixel-perfect mathematical scales and typographic rhythm across ultra-wide monitors, laptops, tablets, and handheld devices."
+    desc: "Ensuring flawless layout adaptation and touch responsiveness across desktops, laptops, tablets, and mobile devices."
   },
   {
     title: "Creative Development",
     number: "06",
-    desc: "Blending creative coding, GSAP scroll choreographies, custom audio-visual feedback, and spatial art direction."
+    desc: "Combining clean code with creative animations and interactive canvas elements to make web products engaging and memorable."
   }
 ];
 

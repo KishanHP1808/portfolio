@@ -16,6 +16,11 @@ import {
   Users,
   Loader2,
   GraduationCap,
+  ShieldCheck,
+  ShieldAlert,
+  Scale,
+  FileText,
+  AlertTriangle,
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 import {
@@ -44,7 +49,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [fakeCustomerIntercepted, setFakeCustomerIntercepted] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    projectType: 'Frontend Web Application',
+    budget: '₹50,000 - ₹1,00,000 ($600 - $1,200)',
+    timeline: 'Standard (3-4 Weeks)',
+    message: '',
+    clientVerified: false,
+    botTrap: '',
+  });
   const [deliveryResult, setDeliveryResult] = useState<{
     recipient?: string;
     delivered?: boolean;
@@ -91,8 +106,57 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError(null);
+    setFakeCustomerIntercepted(null);
+
+    // 1. Invisible bot honeypot detection (catches automated web harvesters & spam bots)
+    if (formData.botTrap) {
+      setIsSubmitting(false);
+      setFakeCustomerIntercepted(
+        'Automated Bot Trap Triggered: Security sensors detected an automated submission. Submission discarded.'
+      );
+      return;
+    }
+
+    // 2. Fake customer / Scam / Unpaid speculative work screening pattern
+    const spamPatterns = [
+      /crypto/i,
+      /forex/i,
+      /binary option/i,
+      /telegram me/i,
+      /whatsapp me/i,
+      /work for free/i,
+      /free trial design/i,
+      /unpaid test/i,
+      /pbn backlink/i,
+      /guaranteed rank/i,
+      /wire transfer/i,
+      /casino/i,
+      /usdt/i,
+      /investment opportunity/i,
+    ];
+
+    const detectedSpam = spamPatterns.some(
+      (pat) => pat.test(formData.message) || pat.test(formData.name)
+    );
+
+    if (detectedSpam) {
+      setIsSubmitting(false);
+      setFakeCustomerIntercepted(
+        'Inquiry Filtered: Your submission matched automated solicitation, spam agency pitches, or unverified speculative request patterns. Kishan H.P. only engages with verified commercial partners and genuine employment opportunities.'
+      );
+      return;
+    }
+
+    // 3. Client Verification Confirmation check
+    if (!formData.clientVerified) {
+      setIsSubmitting(false);
+      setSubmitError('Please check the verification box confirming this is a legitimate commercial or hiring inquiry.');
+      return;
+    }
 
     try {
+      const detailedMessage = `Project Scope: ${formData.projectType}\nEstimated Budget: ${formData.budget}\nTarget Timeline: ${formData.timeline}\nVerified Client: Yes\n\nClient Message:\n${formData.message}`;
+
       // 1. Dispatch directly to Backend API to forward the inquiry to Kishan's email (kishanhp18@gmail.com)
       let backendSuccess = false;
       try {
@@ -102,8 +166,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
-            message: formData.message,
-            subject: `Portfolio Message from ${formData.name}`,
+            message: detailedMessage,
+            subject: `[Verified Client] ${formData.projectType} Inquiry from ${formData.name}`,
           }),
         });
 
@@ -498,40 +562,148 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     </div>
                   </div>
                 ) : (
+                  <>
+                    {fakeCustomerIntercepted && (
+                      <div className="p-4 sm:p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-2 mb-4">
+                      <div className="flex items-center gap-2 font-mono text-xs text-rose-400 font-bold uppercase tracking-wider">
+                        <ShieldAlert className="w-4 h-4 shrink-0 text-rose-400" />
+                        <span>INQUIRY INTERCEPTED BY ANTI-FRAUD GATEKEEPER</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-light">
+                        {fakeCustomerIntercepted}
+                      </p>
+                      <div className="flex items-center justify-between pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setFakeCustomerIntercepted(null)}
+                          className="text-xs font-mono text-rose-400 underline hover:text-white cursor-pointer"
+                        >
+                          Dismiss & Revise Message
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => window.dispatchEvent(new CustomEvent('open-terms-modal'))}
+                          className="text-xs font-mono text-neutral-400 hover:text-white underline cursor-pointer"
+                        >
+                          View Client Engagement Terms ↗
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Client Verification Protocol Header */}
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.02] border border-[#00f0ff]/20 flex items-start gap-3 mb-4 text-xs font-mono text-neutral-300">
+                    <ShieldCheck className="w-4 h-4 text-[#00f0ff] shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <span className="text-[#00f0ff] font-bold uppercase tracking-wider block">
+                        VERIFIED CLIENT INQUIRIES ONLY
+                      </span>
+                      <p className="text-neutral-400 text-[11px] leading-relaxed">
+                        To guarantee high delivery standards for genuine partners, automated agency spam, crypto solicitations, and uncompensated test tasks are automatically filtered. Authentic commercial projects receive direct review within 24 hours.
+                      </p>
+                    </div>
+                  </div>
+
                   <form onSubmit={handleFormSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2">
-                        YOUR NAME / ORGANIZATION
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        maxLength={100}
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g. Alex Thorne / Studio Alpha"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-neutral-600 focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-colors"
-                      />
+                    {/* Invisible Honeypot to Catch Bot Harvesters */}
+                    <input
+                      type="text"
+                      name="company_bot_trap_verification"
+                      value={formData.botTrap}
+                      onChange={(e) => setFormData({ ...formData, botTrap: e.target.value })}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      className="hidden"
+                      aria-hidden="true"
+                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2">
+                          YOUR NAME / ORGANIZATION
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          maxLength={100}
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="e.g. Alex Thorne / Studio Alpha"
+                          className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-neutral-600 focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2">
+                          EMAIL ADDRESS
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          maxLength={150}
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="name@domain.com"
+                          className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-neutral-600 focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1.5">
+                          PROJECT SCOPE
+                        </label>
+                        <select
+                          value={formData.projectType}
+                          onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#0a0a0a] border border-white/10 text-neutral-200 text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
+                        >
+                          <option value="Frontend Web Application">Frontend Web App</option>
+                          <option value="UI/UX Design & System">UI/UX Design & System</option>
+                          <option value="Full Stack Web Solution">Full Stack Web Solution</option>
+                          <option value="Technical Consulting / Audit">Technical Consulting</option>
+                          <option value="Full-Time / Contract Role">Direct Employment / Contract</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1.5">
+                          ESTIMATED BUDGET
+                        </label>
+                        <select
+                          value={formData.budget}
+                          onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#0a0a0a] border border-white/10 text-neutral-200 text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
+                        >
+                          <option value="₹25,000 - ₹50,000 ($300 - $600)">₹25K - ₹50K ($300 - $600)</option>
+                          <option value="₹50,000 - ₹1,00,000 ($600 - $1,200)">₹50K - ₹100K ($600 - $1.2K)</option>
+                          <option value="₹1,00,000+ ($1,200+)">₹100K+ ($1,200+)</option>
+                          <option value="Milestone / Retainer">Milestone / Retainer</option>
+                          <option value="Direct Employment Offer">Employment Offer</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1.5">
+                          TARGET TIMELINE
+                        </label>
+                        <select
+                          value={formData.timeline}
+                          onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#0a0a0a] border border-white/10 text-neutral-200 text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
+                        >
+                          <option value="Immediate (1-2 Weeks)">Immediate (1-2 Weeks)</option>
+                          <option value="Standard (3-4 Weeks)">Standard (3-4 Weeks)</option>
+                          <option value="Flexible / Q4 2026">Flexible Timeline</option>
+                          <option value="Discovery Phase">Discovery / Exploratory</option>
+                        </select>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2">
-                        EMAIL ADDRESS
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        maxLength={150}
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="name@domain.com"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-neutral-600 focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2">
-                        PROJECT INQUIRY / NOTE
+                        PROJECT SPECIFICATION & SCOPE
                       </label>
                       <textarea
                         rows={4}
@@ -539,10 +711,37 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         maxLength={2000}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Describe your timeline, scope, or idea..."
+                        placeholder="Describe your deliverables, technical stack requirements, or role scope..."
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-neutral-600 focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-colors resize-none"
                       />
                     </div>
+
+                    {/* Client Verification Checkbox */}
+                    <label className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/10 text-xs font-mono text-neutral-300 cursor-pointer hover:border-white/20 select-none">
+                      <input
+                        type="checkbox"
+                        checked={formData.clientVerified}
+                        onChange={(e) => setFormData({ ...formData, clientVerified: e.target.checked })}
+                        className="mt-0.5 accent-[#00f0ff] cursor-pointer"
+                      />
+                      <span className="leading-relaxed">
+                        I confirm this is a legitimate commercial inquiry or recruitment discussion, and accept the{' '}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.dispatchEvent(new CustomEvent('open-terms-modal'));
+                          }}
+                          className="text-[#00f0ff] underline hover:text-white"
+                        >
+                          Terms of Engagement
+                        </button>.
+                      </span>
+                    </label>
+
+                    {submitError && (
+                      <p className="text-amber-400 text-xs font-mono">{submitError}</p>
+                    )}
 
                     <button
                       type="submit"
@@ -564,7 +763,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                       )}
                     </button>
                   </form>
-                )}
+                </>
+              )}
               </>
             ) : (
               /* Real-time Guestbook Feed & Submission */
@@ -770,6 +970,41 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <span>{t.contact.back_to_top}</span>
             <ArrowUp className="w-3.5 h-3.5 text-[#00f0ff]" />
           </button>
+        </div>
+
+        {/* Legal & Anti-Fraud Policy Bar */}
+        <div className="pt-6 mt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-neutral-500">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <span>LEGAL JURISDICTION: MYSURU, KARNATAKA</span>
+            <span className="hidden sm:inline">•</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-terms-modal'))}
+              className="hover:text-[#00f0ff] transition-colors cursor-pointer uppercase underline decoration-white/20 underline-offset-4"
+            >
+              TERMS & CONDITIONS
+            </button>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-privacy-modal'))}
+              className="hover:text-[#00f0ff] transition-colors cursor-pointer uppercase underline decoration-white/20 underline-offset-4"
+            >
+              PRIVACY POLICY
+            </button>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-terms-modal'))}
+              className="hover:text-[#00f0ff] transition-colors cursor-pointer uppercase underline decoration-white/20 underline-offset-4"
+            >
+              CLIENT VERIFICATION & ANTI-FRAUD
+            </button>
+          </div>
+
+          <div className="text-neutral-500 text-[10px]">
+            GENUINE COMMERCIAL CLIENTS ONLY • SPAM DISCARDED
+          </div>
         </div>
       </div>
     </footer>
