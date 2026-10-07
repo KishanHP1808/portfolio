@@ -25,6 +25,7 @@ import {
   GuestbookEntry,
 } from '../services/firebaseService';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ContactSectionProps {
   onHoverAction?: (text: string) => void;
@@ -38,6 +39,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   onOpenTalkToHim,
 }) => {
   const { user } = useAuth();
+  const { t, isKannada } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -195,28 +197,40 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-[#00f0ff]/10 rounded-full blur-[180px] pointer-events-none" />
 
       <div className="max-w-[1700px] mx-auto relative z-10">
-        {/* Section Top Label */}
-        <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-5 sm:mb-8">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>FINAL CONVERGENCE</span>
-        </div>
+        {/* Section Top Label & Colossal Heading with Scroll Reveal */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-5 sm:mb-8">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>FINAL CONVERGENCE</span>
+          </div>
 
-        {/* Colossal Heading */}
-        <div className="mb-10 sm:mb-16 md:mb-24">
-          <h2 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-[10.5vw] text-white uppercase tracking-tighter leading-[0.9]">
-            LET&apos;S BUILD <br />
-            <span className="text-stroke-subtle hover:text-white transition-colors duration-500">
-              SOMETHING
-            </span>{' '}
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-[#00f0ff]">
-              REMARKABLE.
-            </span>
-          </h2>
-        </div>
+          <div className="mb-10 sm:mb-16 md:mb-24">
+            <h2 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-[10.5vw] text-white uppercase tracking-tighter leading-[0.9]">
+              LET&apos;S BUILD <br />
+              <span className="text-stroke-subtle hover:text-white transition-colors duration-500">
+                SOMETHING
+              </span>{' '}
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-[#00f0ff]">
+                REMARKABLE.
+              </span>
+            </h2>
+          </div>
+        </motion.div>
 
-        {/* Interactive Contact Matrix */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-20 items-start mb-16 sm:mb-24 md:mb-32">
+        {/* Interactive Contact Matrix with Scroll Reveal */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-70px' }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-20 items-start mb-16 sm:mb-24 md:mb-32"
+        >
           {/* Left Column: Direct Action & Coordinates */}
           <div className="lg:col-span-6 space-y-6 sm:space-y-8">
             <p className="font-serif-editorial italic text-xl sm:text-2xl md:text-3xl text-neutral-300 font-light leading-relaxed">
@@ -664,7 +678,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Social Footnote & Copyright */}
         <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono text-neutral-500">
@@ -715,6 +729,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               LinkedIn
             </a>
             <a
+              href={PERSONAL_INFO.socials.credly}
+              target="_blank"
+              rel="noreferrer"
+              onMouseEnter={() => onHoverAction?.('CREDLY')}
+              onMouseLeave={onHoverEnd}
+              className="hover:text-white uppercase transition-colors"
+              title="Credly Profile (kishan-h-p)"
+            >
+              Credly
+            </a>
+            <a
               href={PERSONAL_INFO.socials.leetcode}
               target="_blank"
               rel="noreferrer"
@@ -742,7 +767,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             onMouseLeave={onHoverEnd}
             className="flex items-center gap-2 hover:text-white transition-colors uppercase cursor-pointer"
           >
-            <span>BACK TO TOP</span>
+            <span>{t.contact.back_to_top}</span>
             <ArrowUp className="w-3.5 h-3.5 text-[#00f0ff]" />
           </button>
         </div>

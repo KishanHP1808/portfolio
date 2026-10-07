@@ -17,9 +17,10 @@ import {
   Info,
   ArrowLeft,
 } from 'lucide-react';
-import { CERTIFICATES, PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
+import { CERTIFICATES, PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG, CREDLY_PROFILES } from '../data/portfolioData';
 import { Certificate } from '../types';
 import { HoloTiltCard } from './HoloTiltCard';
+import { useLanguage } from '../context/LanguageContext';
 
 interface CertificatesSectionProps {
   onHoverAction?: (text: string) => void;
@@ -30,6 +31,7 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
   const [activeTab, setActiveTab] = useState<'drive' | 'matrix'>('drive');
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
@@ -81,44 +83,83 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
     >
       <div className="max-w-[1700px] mx-auto">
         {/* Section Header */}
-        <div className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-8"
+        >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3">
               <Award className="w-3.5 h-3.5" />
-              <span>OFFICIAL ACCREDITATION MATRIX & CLOUD VAULT</span>
+              <span>{t.certificates.badge}</span>
             </div>
             <h2 className="font-display text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter leading-none">
-              CERTIFICATES
+              {t.certificates.title}
             </h2>
           </div>
 
-          {/* Header Action: Direct Google Drive Link */}
-          <div className="flex flex-col sm:flex-row items-start md:items-end gap-4 font-mono text-xs">
-            <div className="hidden lg:flex flex-col items-end text-neutral-400">
-              <span className="text-[#00f0ff] flex items-center gap-1.5">
-                <Cloud className="w-3.5 h-3.5" />
-                <span>REAL-TIME CLOUD STORAGE</span>
-              </span>
-              <span>ZERO ALTERATIONS REQUIRED FOR FUTURE UPLOADS</span>
+          {/* Header Action: Direct Google Drive Link & Credly Profiles */}
+          <div className="flex flex-col items-start md:items-end gap-3 font-mono text-xs">
+            <div className="flex flex-col sm:flex-row items-start md:items-end gap-4">
+              <div className="hidden lg:flex flex-col items-end text-neutral-400">
+                <span className="text-[#00f0ff] flex items-center gap-1.5">
+                  <Cloud className="w-3.5 h-3.5" />
+                  <span>REAL-TIME CLOUD STORAGE</span>
+                </span>
+                <span>ZERO ALTERATIONS REQUIRED FOR FUTURE UPLOADS</span>
+              </div>
+
+              <a
+                id="header-open-drive-btn"
+                href={CERTIFICATES_DRIVE_CONFIG.url}
+                target="_blank"
+                rel="noreferrer"
+                onMouseEnter={() => onHoverAction?.('DRIVE')}
+                onMouseLeave={onHoverEnd}
+                className="inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-[#00f0ff] text-black font-condensed tracking-wider uppercase text-xs sm:text-sm font-extrabold hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(0,240,255,0.4)] cursor-pointer"
+              >
+                <FolderArchive className="w-4 h-4" />
+                <span>OPEN GOOGLE DRIVE ↗</span>
+              </a>
             </div>
 
-            <a
-              id="header-open-drive-btn"
-              href={CERTIFICATES_DRIVE_CONFIG.url}
-              target="_blank"
-              rel="noreferrer"
-              onMouseEnter={() => onHoverAction?.('DRIVE')}
-              onMouseLeave={onHoverEnd}
-              className="inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-[#00f0ff] text-black font-condensed tracking-wider uppercase text-xs sm:text-sm font-extrabold hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(0,240,255,0.4)] cursor-pointer"
-            >
-              <FolderArchive className="w-4 h-4" />
-              <span>OPEN GOOGLE DRIVE ↗</span>
-            </a>
+            {/* Credly Accounts - Clean and subtle, not highlighted */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <span className="text-[11px] text-neutral-500 font-mono uppercase tracking-wider">Credly:</span>
+              <a
+                href={PERSONAL_INFO.socials.credly}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/20 text-xs font-mono transition-colors"
+                title="Credly Profile (kishan-h-p)"
+              >
+                <span>kishan-h-p</span>
+                <ExternalLink className="w-3 h-3 text-neutral-500" />
+              </a>
+              <a
+                href={PERSONAL_INFO.socials.credlyAlt}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/20 text-xs font-mono transition-colors"
+                title="Credly Badges (kishan-h-p.a82b9747)"
+              >
+                <span>kishan-h-p.a82b9747</span>
+                <ExternalLink className="w-3 h-3 text-neutral-500" />
+              </a>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Primary View Switcher: Live Google Drive Vault vs Verified Credential Matrix */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-10 p-2 rounded-2xl bg-white/[0.02] border border-white/10">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-wrap items-center justify-between gap-4 mb-10 p-2 rounded-2xl bg-white/[0.02] border border-white/10"
+        >
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setActiveTab('drive')}
@@ -158,7 +199,7 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
               ? 'Synced directly with Google Drive • Instant dynamic updates'
               : 'Verified Industry Accreditations & Honor Badges'}
           </div>
-        </div>
+        </motion.div>
 
         {/* TAB 1: LIVE GOOGLE DRIVE VAULT */}
         {activeTab === 'drive' && (
@@ -328,23 +369,50 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
         {/* TAB 2: INDEXED CREDENTIAL MATRIX */}
         {activeTab === 'matrix' && (
           <div className="space-y-12">
-            {/* Category Filters */}
-            <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  onMouseEnter={() => onHoverAction?.('FILTER')}
-                  onMouseLeave={onHoverEnd}
-                  className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer ${
-                    activeCategory === cat
-                      ? 'bg-[#00f0ff] text-black font-bold shadow-[0_0_20px_rgba(0,240,255,0.4)]'
-                      : 'bg-white/[0.03] border border-white/10 text-neutral-400 hover:text-white hover:border-white/30'
-                  }`}
+            {/* Category Filters & Credly Badges Access */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/5 pb-4">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    onMouseEnter={() => onHoverAction?.('FILTER')}
+                    onMouseLeave={onHoverEnd}
+                    className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer ${
+                      activeCategory === cat
+                        ? 'bg-[#00f0ff] text-black font-bold shadow-[0_0_20px_rgba(0,240,255,0.4)]'
+                        : 'bg-white/[0.03] border border-white/10 text-neutral-400 hover:text-white hover:border-white/30'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Credly badge links (subtle, non-highlighted) */}
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-neutral-400">
+                <span className="text-neutral-500 text-[11px] uppercase tracking-wider">Credly:</span>
+                <a
+                  href={PERSONAL_INFO.socials.credly}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 rounded-md border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/20 transition-colors inline-flex items-center gap-1.5"
+                  title="Credly Profile (kishan-h-p)"
                 >
-                  {cat}
-                </button>
-              ))}
+                  <span>kishan-h-p</span>
+                  <ExternalLink className="w-3 h-3 text-neutral-500" />
+                </a>
+                <a
+                  href={PERSONAL_INFO.socials.credlyAlt}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 rounded-md border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/20 transition-colors inline-flex items-center gap-1.5"
+                  title="Credly Badges (kishan-h-p.a82b9747)"
+                >
+                  <span>kishan-h-p.a82b9747</span>
+                  <ExternalLink className="w-3 h-3 text-neutral-500" />
+                </a>
+              </div>
             </div>
 
             {/* Certificates Column Grid with 3D Holographic Perspective */}
@@ -494,6 +562,29 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
               <span>LINKEDIN CREDENTIALS</span>
               <ExternalLink className="w-4 h-4" />
             </a>
+
+            {/* Credly Profile Links (Subtle & Unhighlighted) */}
+            <a
+              href={PERSONAL_INFO.socials.credly}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-white/10 bg-white/[0.02] hover:border-white/25 text-neutral-400 hover:text-white transition-all duration-300 font-mono text-xs"
+              title="Credly Profile (kishan-h-p)"
+            >
+              <span>CREDLY: kishan-h-p</span>
+              <ExternalLink className="w-3.5 h-3.5 text-neutral-500" />
+            </a>
+
+            <a
+              href={PERSONAL_INFO.socials.credlyAlt}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-white/10 bg-white/[0.02] hover:border-white/25 text-neutral-400 hover:text-white transition-all duration-300 font-mono text-xs"
+              title="Credly Badges Archive (kishan-h-p.a82b9747)"
+            >
+              <span>CREDLY: kishan-h-p.a82b9747</span>
+              <ExternalLink className="w-3.5 h-3.5 text-neutral-500" />
+            </a>
           </div>
         </div>
       </div>
@@ -588,11 +679,21 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   </button>
 
                   <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={PERSONAL_INFO.socials.credly}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/20 text-xs font-mono transition-colors"
+                      title="Credly Profile (kishan-h-p)"
+                    >
+                      <span>CREDLY</span>
+                      <ExternalLink className="w-3 h-3 text-neutral-500" />
+                    </a>
 
-                  <a
-                    href={CERTIFICATES_DRIVE_CONFIG.url}
-                    target="_blank"
-                    rel="noreferrer"
+                    <a
+                      href={CERTIFICATES_DRIVE_CONFIG.url}
+                      target="_blank"
+                      rel="noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 text-[#00f0ff] font-condensed tracking-wider uppercase text-xs font-bold hover:bg-[#00f0ff] hover:text-black transition-all"
                   >
                     <FolderArchive className="w-3.5 h-3.5" />

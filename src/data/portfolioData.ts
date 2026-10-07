@@ -31,9 +31,24 @@ export const PERSONAL_INFO = {
     instagramHandle: "kishan_h.p.shaiva",
     leetcode: "https://leetcode.com/u/Kishan_H_P",
     leetcodeUsername: "Kishan_HP",
+    credly: "https://www.credly.com/users/kishan-h-p",
+    credlyAlt: "https://www.credly.com/users/kishan-h-p.a82b9747",
     googleDriveCertificates: "https://drive.google.com/drive/folders/1RqCIJMREGOfOVoxlt33iGVFRvRwHIpnZ?usp=drive_link"
   }
 };
+
+export const CREDLY_PROFILES = [
+  {
+    name: "Credly Profile",
+    url: "https://www.credly.com/users/kishan-h-p",
+    handle: "kishan-h-p"
+  },
+  {
+    name: "Credly Badges Archive",
+    url: "https://www.credly.com/users/kishan-h-p.a82b9747",
+    handle: "kishan-h-p.a82b9747"
+  }
+];
 
 export const CERTIFICATES_DRIVE_CONFIG = {
   folderId: "1RqCIJMREGOfOVoxlt33iGVFRvRwHIpnZ",
@@ -743,7 +758,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     year: "2025",
-    period: "2024 – 2025",
+    period: "2025",
     role: "UI/UX Designer & Web Developer",
     company: "Digital Product Initiatives",
     type: "UI/UX • Frontend Engineering",
@@ -754,20 +769,6 @@ export const EXPERIENCES: ExperienceItem[] = [
       "Optimized Core Web Vitals to consistent 95+ performance scores"
     ],
     technologies: ["Figma", "React", "Python", "Django", "Tailwind CSS", "REST APIs"]
-  },
-  {
-    year: "2024",
-    period: "2023 – 2024",
-    role: "Frontend Developer & Creative Coder",
-    company: "Academic & Open Source Endeavors",
-    type: "Frontend • Interactive Labs",
-    description: "Built foundational full-stack applications, computer vision measurement tools, and interactive canvas experiments rooted in mathematical precision.",
-    achievements: [
-      "Developed custom Canvas-based dimensional metrology tools for optical analysis",
-      "Authored accessible open-source React components and layout utilities",
-      "Conducted extensive research in typography systems and responsive ergonomics"
-    ],
-    technologies: ["JavaScript", "HTML5 Canvas", "CSS3", "Python", "Git", "REST APIs"]
   }
 ];
 

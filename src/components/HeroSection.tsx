@@ -4,6 +4,7 @@ import { ArrowDownRight, Compass, Sparkles, MapPin, Terminal, Cpu, Code2, Downlo
 import { PERSONAL_INFO } from '../data/portfolioData';
 import { FoggyGlassName } from './FoggyGlassName';
 import { JarvisConsole } from './JarvisConsole';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeroSectionProps {
   onHoverAction?: (text: string) => void;
@@ -20,6 +21,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenTalkToHim,
   onOpenResume,
 }) => {
+  const { t, isKannada } = useLanguage();
   const containerRef = useRef<HTMLElement | null>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
@@ -66,7 +68,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-neutral-400 max-w-full">
           <div className="flex items-center gap-1.5 text-neutral-400 shrink-0">
             <MapPin className="w-3.5 h-3.5 text-[#00f0ff]" />
-            <span>MYSURU, KARNATAKA, INDIA</span>
+            <span>{t.hero.location}</span>
           </div>
           <span className="hidden sm:inline text-neutral-600">•</span>
           <a
@@ -79,13 +81,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             title="Maharaja Institute of Technology Tandavapura (https://mitt.edu.in/)"
           >
             <GraduationCap className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" />
-            <span className="truncate">Maharaja Institute of Technology Tandavapura</span>
+            <span className="truncate">{t.navbar.mit_college}</span>
             <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
           </a>
         </div>
 
         <div className="flex items-center gap-6 shrink-0">
-          <span className="hidden sm:inline-block text-neutral-400">PORTFOLIO VOL. XXIV</span>
+          <span className="hidden sm:inline-block text-[#00f0ff] font-bold">
+            {t.hero.available_for_hire}
+          </span>
         </div>
       </div>
 
@@ -100,14 +104,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 mb-3 sm:mb-4 md:mb-6"
           >
-            {PERSONAL_INFO.roles.map((role) => (
-              <span
-                key={role}
-                className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] sm:text-[11px] md:text-xs font-mono uppercase tracking-wider text-neutral-300 backdrop-blur-sm"
-              >
-                {role}
+            {isKannada ? (
+              <span className="px-3 py-1.5 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 text-xs font-mono uppercase tracking-wider text-[#00f0ff] backdrop-blur-sm">
+                {t.hero.role}
               </span>
-            ))}
+            ) : (
+              PERSONAL_INFO.roles.map((role) => (
+                <span
+                  key={role}
+                  className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] sm:text-[11px] md:text-xs font-mono uppercase tracking-wider text-neutral-300 backdrop-blur-sm"
+                >
+                  {role}
+                </span>
+              ))
+            )}
           </motion.div>
 
           {/* Colossal Name Protected by Interactive Foggy Glass: KISHAN H.P. */}
@@ -121,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             className="mt-5 sm:mt-6 md:mt-8 max-w-2xl"
           >
             <p className="font-serif-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl italic text-neutral-200 leading-snug font-light">
-              &ldquo;{PERSONAL_INFO.heroTagline}&rdquo;
+              &ldquo;{isKannada ? t.hero.tagline : PERSONAL_INFO.heroTagline}&rdquo;
             </p>
 
             <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 w-full">
@@ -132,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 onMouseLeave={onHoverEnd}
                 className="group flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2 sm:py-3.5 rounded-full bg-white text-black font-condensed tracking-wider uppercase text-xs sm:text-sm font-bold hover:bg-[#00f0ff] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] cursor-pointer"
               >
-                <span>EXPLORE WORK</span>
+                <span>{t.hero.explore_work}</span>
                 <ArrowDownRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1" />
               </button>
 
@@ -143,7 +153,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 onMouseLeave={onHoverEnd}
                 className="flex items-center justify-center px-3.5 xs:px-4 sm:px-6 py-2 sm:py-3.5 rounded-full border border-white/20 bg-black/40 hover:border-[#00f0ff] hover:text-[#00f0ff] text-white font-condensed tracking-wider uppercase text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer"
               >
-                INITIATE CONTACT
+                {t.hero.get_in_touch}
               </button>
 
               <button
@@ -159,7 +169,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 title="Talk directly to Kishan H.P"
               >
                 <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:scale-125" />
-                <span>TALK TO HIM</span>
+                <span>{t.hero.talk_to_him}</span>
               </button>
 
               <button
@@ -173,7 +183,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="group flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2 sm:py-3.5 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 hover:bg-[#00f0ff] hover:text-black text-[#00f0ff] font-condensed tracking-wider uppercase text-xs sm:text-sm font-bold transition-all duration-300 shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                <span>RESUME [PDF]</span>
+                <span>{t.hero.download_resume}</span>
               </button>
 
               <button

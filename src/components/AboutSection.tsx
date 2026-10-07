@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Sparkles, Code2, Compass, Layers, ShieldCheck, Camera, Palette, Film, Heart, ArrowUpRight, GraduationCap } from 'lucide-react';
 import { PERSONAL_INFO, FOCUS_AREAS, HOBBIES } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AboutSectionProps {
   onHoverAction?: (text: string) => void;
@@ -12,43 +13,59 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
+
   return (
     <section id="about" className="relative w-full py-16 sm:py-24 md:py-36 px-3.5 sm:px-6 md:px-12 lg:px-16 border-t border-white/10 select-none">
       <div className="max-w-[1700px] mx-auto">
-        {/* Editorial Subheader */}
-        <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3 sm:mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>EDITORIAL MONOGRAPH</span>
-        </div>
+        {/* Editorial Subheader & Section Heading with Scroll Reveal */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3 sm:mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{t.about.badge}</span>
+          </div>
 
-        {/* Section Heading */}
-        <div className="mb-12 sm:mb-16 md:mb-24">
-          <h2 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
-            ABOUT ME
-          </h2>
-        </div>
+          <div className="mb-12 sm:mb-16 md:mb-24">
+            <h2 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
+              {t.about.title}
+            </h2>
+          </div>
+        </motion.div>
 
         {/* Large Statement and Asymmetrical Bio Presentation */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-20 items-start mb-16 sm:mb-24 md:mb-32">
+        <motion.div
+          initial={{ opacity: 0, y: 45 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-70px' }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-20 items-start mb-16 sm:mb-24 md:mb-32"
+        >
           {/* Left: Giant Manifesto Quote */}
           <div className="lg:col-span-7">
             <h3 className="font-serif-editorial text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-light italic leading-tight mb-5 sm:mb-8">
-              &ldquo;{PERSONAL_INFO.aboutHeadline}&rdquo;
+              &ldquo;{isKannada ? t.about.manifesto : PERSONAL_INFO.aboutHeadline}&rdquo;
             </h3>
 
             <p className="text-neutral-300 text-base sm:text-lg md:text-xl leading-relaxed font-light mb-4 sm:mb-6">
-              {PERSONAL_INFO.aboutDescription}
+              {isKannada ? t.about.bio_p1 : PERSONAL_INFO.aboutDescription}
             </p>
 
             <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
-              Based in the heritage tech hub of Mysuru, Karnataka, Kishan approaches every interface as both a gallery installation and a precision tool. He rejects the compromise between visual grandeur and runtime velocity, ensuring every layout responds with sub-frame fluidness.
+              {isKannada
+                ? t.about.bio_p2
+                : 'Based in the heritage tech hub of Mysuru, Karnataka, Kishan approaches every interface as both a gallery installation and a precision tool. He rejects the compromise between visual grandeur and runtime velocity, ensuring every layout responds with sub-frame fluidness.'}
             </p>
 
             {/* Geographical, Academic & Availability Pill */}
             <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-2 sm:gap-4 text-xs font-mono">
               <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 bg-white/[0.02]">
                 <MapPin className="w-3.5 h-3.5 text-[#00f0ff]" />
-                <span className="text-neutral-300">{PERSONAL_INFO.location}</span>
+                <span className="text-neutral-300">{isKannada ? t.about.location_label : PERSONAL_INFO.location}</span>
               </div>
               <a
                 href={PERSONAL_INFO.college.url}
@@ -60,12 +77,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                 title="Maharaja Institute of Technology Tandavapura"
               >
                 <GraduationCap className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" />
-                <span className="truncate">{PERSONAL_INFO.college.name}</span>
+                <span className="truncate">{isKannada ? t.about.college_label : PERSONAL_INFO.college.name}</span>
                 <ArrowUpRight className="w-3 h-3 opacity-60 shrink-0" />
               </a>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-[#00f0ff]">
                 <span className="w-2 h-2 rounded-full bg-[#00f0ff] animate-ping" />
-                <span>OPEN FOR SELECT OPPORTUNITIES</span>
+                <span>{isKannada ? 'ಹೊಸ ಪ್ರಾಜೆಕ್ಟ್‌ಗಳಿಗೆ ಲಭ್ಯ' : 'OPEN FOR SELECT OPPORTUNITIES'}</span>
               </div>
             </div>
           </div>
@@ -123,10 +140,16 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Focus Areas: Not generic resume bullet points! Editorial 6-segment grid */}
-        <div className="pt-12 border-t border-white/10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-70px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="pt-12 border-t border-white/10"
+        >
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-mono text-xs uppercase tracking-widest text-[#00f0ff]">
               CORE FOCUS AREAS
@@ -137,9 +160,13 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FOCUS_AREAS.map((area) => (
-              <div
+            {FOCUS_AREAS.map((area, idx) => (
+              <motion.div
                 key={area.number}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.07, ease: [0.22, 1, 0.36, 1] }}
                 onMouseEnter={() => onHoverAction?.(area.title.split(' ')[0])}
                 onMouseLeave={onHoverEnd}
                 className="group relative p-8 rounded-2xl border border-white/10 bg-white/[0.015] hover:border-[#00f0ff]/50 hover:bg-[#00f0ff]/[0.03] transition-all duration-500 flex flex-col justify-between"
@@ -165,13 +192,20 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                   <span>DISCIPLINE VERIFIED</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff]/60 group-hover:scale-150 transition-transform shadow-[0_0_6px_#00f0ff]" />
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Dedicated Hobbies Column: Capturing Pictures, Drawing Portraits, Movies, Exploring Places & Much More */}
-        <div id="hobbies-column" className="mt-20 pt-16 border-t border-white/10">
+        <motion.div
+          id="hobbies-column"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-70px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-20 pt-16 border-t border-white/10"
+        >
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-2">
@@ -281,7 +315,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

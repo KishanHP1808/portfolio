@@ -222,7 +222,7 @@ export const generateClientResumePDF = (): void => {
     {
       role: 'UI/UX Designer & Web Developer',
       org: 'Digital Product Initiatives',
-      period: '2024 – 2025',
+      period: '2025',
       desc: 'Created end-to-end design systems in Figma with auto-layout tokenization. Translated prototypes into high-performance full-stack web applications with Python/Django backends.'
     }
   ];

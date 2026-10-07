@@ -15,6 +15,7 @@ import { CertificatesSection } from './components/CertificatesSection';
 import { ContactSection } from './components/ContactSection';
 import { FloatingWavePlayer } from './components/FloatingWavePlayer';
 import { FloatingBackNavigator } from './components/FloatingBackNavigator';
+import { BackToTopButton } from './components/BackToTopButton';
 import { ElectricThunderCanvas } from './components/ElectricThunderCanvas';
 import { ElectricCursorTrail } from './components/ElectricCursorTrail';
 import { ThunderAiBot } from './components/ThunderAiBot';
@@ -22,9 +23,11 @@ import { ResumeModal } from './components/ResumeModal';
 import { TalkToHimModal } from './components/TalkTogetherModal';
 import { AuthProfileModal } from './components/AuthProfileModal';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
+import { useTheme } from './context/ThemeContext';
 import { Project, CursorState } from './types';
 
 export default function App() {
+  const { theme, isLight } = useTheme();
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -135,7 +138,14 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-[#ededed] selection:bg-[#00f0ff] selection:text-black font-sans antialiased overflow-x-hidden">
+    <div
+      className={`relative min-h-screen font-sans antialiased overflow-x-hidden transition-colors duration-500 ${
+        isLight
+          ? 'bg-[#f8fafc] text-[#09090b] selection:bg-[#0284c7] selection:text-white light'
+          : 'bg-[#050505] text-[#ededed] selection:bg-[#00f0ff] selection:text-black dark'
+      }`}
+      data-theme={theme}
+    >
       {/* Thin, Fixed Glowing Scroll Progress Bar */}
       <ScrollProgressBar />
 
@@ -227,6 +237,12 @@ export default function App() {
 
         {/* Global Floating Phase Back Navigator (Back options for all phases) */}
         <FloatingBackNavigator
+          onHoverAction={handleHoverAction}
+          onHoverEnd={handleHoverEnd}
+        />
+
+        {/* Persistent Back to Top Button (Appears past HeroSection) */}
+        <BackToTopButton
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
         />

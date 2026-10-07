@@ -6,6 +6,7 @@ import { Project } from '../types';
 import { HoloTiltCard } from './HoloTiltCard';
 import { ProjectLikeButton } from './ProjectLikeButton';
 import { ProjectBookmarkButton } from './ProjectBookmarkButton';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ProjectsShowcaseProps {
   onSelectProject: (project: Project) => void;
@@ -18,27 +19,50 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+
+  const getLocalizedSubtitle = (project: Project) => {
+    if (!isKannada) return project.subtitle;
+    if (project.id === 'agri-guard') return t.projects.agriguard_subtitle;
+    if (project.id === 'football-auction') return t.projects.football_subtitle;
+    if (project.id === 'research-assistant') return t.projects.assistant_subtitle;
+    return project.subtitle;
+  };
+
+  const getLocalizedDescription = (project: Project) => {
+    if (!isKannada) return project.description;
+    if (project.id === 'agri-guard') return t.projects.agriguard_desc;
+    if (project.id === 'football-auction') return t.projects.football_desc;
+    if (project.id === 'research-assistant') return t.projects.assistant_desc;
+    return project.description;
+  };
 
   return (
     <section id="work" className="relative w-full py-16 sm:py-24 md:py-36 px-3.5 sm:px-6 md:px-12 lg:px-16 select-none">
       {/* Editorial Section Header */}
-      <div className="max-w-[1700px] mx-auto mb-12 sm:mb-20 md:mb-28 border-b border-white/10 pb-6 sm:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-[1700px] mx-auto mb-12 sm:mb-20 md:mb-28 border-b border-white/10 pb-6 sm:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6"
+      >
         <div>
           <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-2 sm:mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>SELECTED REPERTOIRE</span>
+            <span>{t.projects.curated_badge}</span>
           </div>
           <h2 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white uppercase tracking-tighter">
-            FEATURED WORK
+            {t.projects.section_title}
           </h2>
         </div>
 
         <div className="flex items-baseline gap-4 font-mono text-xs text-neutral-400">
-          <span>CINEMATIC CASE STUDIES</span>
+          <span>{isKannada ? 'ಕೇಸ್ ಸ್ಟಡಿಗಳು' : 'CINEMATIC CASE STUDIES'}</span>
           <span className="text-[#00f0ff]">[01 — {PROJECTS.length.toString().padStart(2, '0')}]</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Cinematic Project Scenes (Sequential Full-Width Presentations) */}
       <div className="max-w-[1700px] mx-auto space-y-16 sm:space-y-28 md:space-y-48">
@@ -46,8 +70,12 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
           const isEven = idx % 2 === 0;
 
           return (
-            <div
+            <motion.div
               key={project.id}
+              initial={{ opacity: 0, y: 45 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.85, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
               className="relative group"
               onMouseEnter={() => {
                 setActiveProjectIndex(idx);
@@ -98,10 +126,10 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                             <span className="hidden sm:flex items-center gap-1.5 bg-cyan-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-500/30 text-[#00f0ff] text-[10px] font-mono">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-ping" />
                               {project.liveUrl.includes('vercel.app')
-                                ? 'DEPLOYED ON VERCEL'
+                                ? t.projects.deployed_vercel
                                 : project.liveUrl.includes('onrender.com')
-                                ? 'DEPLOYED ON RENDER'
-                                : 'LIVE PRODUCTION'}
+                                ? t.projects.deployed_render
+                                : t.projects.live_production}
                             </span>
                           )}
                         </div>
@@ -114,7 +142,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         <div className="px-6 py-3 rounded-full bg-[#00f0ff] text-black font-condensed tracking-widest uppercase font-bold text-sm flex items-center gap-2 shadow-[0_0_35px_rgba(0,240,255,0.85)] scale-90 group-hover:scale-100 transition-transform duration-300">
                           <Eye className="w-4 h-4" />
-                          <span>OPEN CASE STUDY</span>
+                          <span>{t.projects.open_case_study}</span>
                         </div>
                       </div>
 
@@ -133,7 +161,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                 >
                   {/* Project Number */}
                   <div className="font-mono text-sm tracking-[0.25em] text-[#00f0ff] mb-2">
-                    PROJECT {project.number} / {PROJECTS.length.toString().padStart(2, '0')}
+                    {t.projects.project_label} {project.number} / {PROJECTS.length.toString().padStart(2, '0')}
                   </div>
 
                   {/* Masked Title with bold condensed type */}
@@ -148,22 +176,22 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
 
                   {/* Subtitle / Category statement */}
                   <p className="font-serif-editorial italic text-lg sm:text-xl md:text-2xl text-neutral-300 font-light mb-3 sm:mb-4">
-                    {project.subtitle}
+                    {getLocalizedSubtitle(project)}
                   </p>
 
                   {/* Description paragraph */}
                   <p className="text-neutral-400 text-sm md:text-base leading-relaxed mb-5 sm:mb-6">
-                    {project.description}
+                    {getLocalizedDescription(project)}
                   </p>
 
                   {/* Metadata spec pills */}
                   <div className="grid grid-cols-2 gap-4 py-3 sm:py-4 border-y border-white/10 mb-5 sm:mb-6 text-xs font-mono">
                     <div>
-                      <div className="text-neutral-500 uppercase tracking-wider mb-1">Role</div>
+                      <div className="text-neutral-500 uppercase tracking-wider mb-1">{isKannada ? 'ಪಾತ್ರ' : 'Role'}</div>
                       <div className="text-neutral-200">{project.role}</div>
                     </div>
                     <div>
-                      <div className="text-neutral-500 uppercase tracking-wider mb-1">Timeline</div>
+                      <div className="text-neutral-500 uppercase tracking-wider mb-1">{isKannada ? 'ಸಮಯಾವಧಿ' : 'Timeline'}</div>
                       <div className="text-neutral-200">{project.year} • Live</div>
                     </div>
                   </div>
@@ -191,7 +219,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                         onMouseLeave={onHoverEnd}
                         className="group/live inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#00f0ff] text-black hover:bg-white transition-all duration-300 font-condensed tracking-wider uppercase text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,240,255,0.45)]"
                       >
-                        <span>LAUNCH LIVE APP</span>
+                        <span>{isKannada ? 'ಲೈವ್ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಿರಿ' : 'LAUNCH LIVE APP'}</span>
                         <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/live:translate-x-1 group-hover/live:-translate-y-1" />
                       </a>
                     )}
@@ -202,7 +230,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                       onMouseLeave={onHoverEnd}
                       className="group/btn inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full border border-white/20 bg-white/5 hover:border-white hover:bg-white/10 transition-all duration-300 text-white font-condensed tracking-wider uppercase text-xs sm:text-sm font-semibold cursor-pointer"
                     >
-                      <span>VIEW CASE STUDY</span>
+                      <span>{isKannada ? 'ಕೇಸ್ ಸ್ಟಡಿ ವೀಕ್ಷಿಸಿ' : 'VIEW CASE STUDY'}</span>
                       <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 text-neutral-400 group-hover/btn:text-white" />
                     </button>
 
@@ -231,7 +259,7 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
                 <span className="hidden sm:inline-block">KISHAN H.P • DIGITAL PORTFOLIO</span>
                 <span>STATUS: ARCHIVED & ACTIVE</span>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

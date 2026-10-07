@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare, User, LogIn, Zap } from 'lucide-react';
+import { ArrowUpRight, X, Download, FileText, Sparkles, ExternalLink, FolderArchive, GraduationCap, MessageSquare, User, LogIn, Zap, Languages, Sun, Moon } from 'lucide-react';
 import { PERSONAL_INFO, CERTIFICATES_DRIVE_CONFIG } from '../data/portfolioData';
 import { SoundDesign } from './SoundDesign';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface NavbarProps {
   onHoverAction?: (text: string) => void;
@@ -22,6 +24,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuthModal,
 }) => {
   const { user } = useAuth();
+  const { language, setLanguage, toggleLanguage, t } = useLanguage();
+  const { theme, toggleTheme, setTheme, isDark, isLight } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mysuruTime, setMysuruTime] = useState('');
@@ -94,12 +98,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const navLinks = [
-    { label: 'WORK', href: '#work', number: '01' },
-    { label: 'ABOUT', href: '#about', number: '02' },
-    { label: 'SKILLS', href: '#skills', number: '03' },
-    { label: 'EXPERIENCE', href: '#experience', number: '04' },
-    { label: 'CERTIFICATES', href: '#certificates', number: '05' },
-    { label: 'CONTACT', href: '#contact', number: '06' },
+    { label: t.navbar.work, href: '#work', number: '01' },
+    { label: t.navbar.about, href: '#about', number: '02' },
+    { label: t.navbar.skills, href: '#skills', number: '03' },
+    { label: t.navbar.experience, href: '#experience', number: '04' },
+    { label: t.navbar.certificates, href: '#certificates', number: '05' },
+    { label: t.navbar.contact, href: '#contact', number: '06' },
   ];
 
   const handleLinkClick = (href: string) => {
@@ -154,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff] group-hover:scale-125 transition-transform duration-300 shrink-0" />
               <span className="text-[10px] sm:text-xs font-mono text-neutral-300 tracking-widest font-medium group-hover:text-white transition-colors truncate">
-                MYSURU {mysuruTime ? `[${mysuruTime} IST]` : '[IST]'}
+                {t.navbar.mysuru} {mysuruTime ? `[${mysuruTime} IST]` : '[IST]'}
               </span>
             </a>
 
@@ -170,20 +174,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00f0ff]/80 group-hover:text-[#00f0ff] transition-colors shrink-0" />
               <span className="truncate text-neutral-400 group-hover:text-white group-hover:underline underline-offset-2 transition-colors">
-                <span className="xs:hidden">MIT Tandavapura</span>
-                <span className="hidden xs:inline">Maharaja Institute of Technology Tandavapura</span>
+                <span className="xs:hidden">{t.navbar.mit_college_short}</span>
+                <span className="hidden xs:inline">{t.navbar.mit_college}</span>
               </span>
               <ExternalLink className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
             </a>
           </div>
 
           {/* Center / Right controls */}
-          <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 md:gap-6 shrink-0">
+          <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 md:gap-5 shrink-0">
             {/* Desktop Minimal Quick Links */}
-            <nav className="hidden lg:flex items-center gap-7 text-xs font-mono tracking-widest text-neutral-400">
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-xs font-mono tracking-widest text-neutral-400">
               {navLinks.map((link) => (
                 <button
-                  key={link.label}
+                  key={link.number}
                   onClick={() => handleLinkClick(link.href)}
                   onMouseEnter={() => onHoverAction?.(link.label)}
                   onMouseLeave={onHoverEnd}
@@ -209,8 +213,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Talk To Him (Instagram, Email, Direct Text)"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">TALK TO HIM</span>
-              <span className="sm:hidden">TALK</span>
+              <span className="hidden sm:inline">{t.navbar.talk_to_him}</span>
+              <span className="sm:hidden">{t.navbar.talk_short}</span>
             </button>
 
             {/* Quick Resume Download Action in Header */}
@@ -226,7 +230,52 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Download or Preview Official Resume (PDF)"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">RESUME</span>
+              <span className="hidden xs:inline">{t.navbar.resume}</span>
+            </button>
+
+            {/* Language Toggle Feature (English <-> Kannada) */}
+            <button
+              id="header-language-toggle-btn"
+              onClick={toggleLanguage}
+              onMouseEnter={() => onHoverAction?.(language === 'en' ? 'ಕನ್ನಡ' : 'ENGLISH')}
+              onMouseLeave={onHoverEnd}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-[#00f0ff]/30 hover:border-[#00f0ff] bg-black/40 hover:bg-[#00f0ff]/15 text-neutral-200 hover:text-white transition-all duration-300 font-mono text-[11px] sm:text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.12)] group"
+              title={t.navbar.language_switch_prompt}
+              aria-label="Toggle language between English and Kannada"
+            >
+              <Languages className="w-3.5 h-3.5 text-[#00f0ff] group-hover:rotate-12 transition-transform duration-300" />
+              <span className="font-bold tracking-wider select-none">
+                <span className={language === 'en' ? 'text-[#00f0ff]' : 'text-neutral-400'}>EN</span>
+                <span className="text-neutral-500 mx-1">|</span>
+                <span className={language === 'kn' ? 'text-[#00f0ff]' : 'text-neutral-400'}>ಕನ್ನಡ</span>
+              </span>
+            </button>
+
+            {/* Theme Toggle Feature (Dark Mode <-> High-Contrast Light Mode) */}
+            <button
+              id="header-theme-toggle-btn"
+              onClick={toggleTheme}
+              onMouseEnter={() => onHoverAction?.(isDark ? 'LIGHT MODE' : 'DARK MODE')}
+              onMouseLeave={onHoverEnd}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-[#00f0ff]/30 hover:border-[#00f0ff] bg-black/40 hover:bg-[#00f0ff]/15 text-neutral-200 hover:text-white transition-all duration-300 font-mono text-[11px] sm:text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.12)] group"
+              title={isDark ? 'Switch to High-Contrast Light Mode' : 'Switch to Dark Mode'}
+              aria-label={isDark ? 'Switch to High-Contrast Light Mode' : 'Switch to Dark Mode'}
+            >
+              {isDark ? (
+                <>
+                  <Sun className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
+                  <span className="font-bold tracking-wider select-none text-neutral-300 hidden md:inline">
+                    {t.navbar.theme_light}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-3.5 h-3.5 text-sky-600 group-hover:-rotate-12 transition-transform duration-300" />
+                  <span className="font-bold tracking-wider select-none text-neutral-800 hidden md:inline">
+                    {t.navbar.theme_dark}
+                  </span>
+                </>
+              )}
             </button>
 
             {/* Recruiter / Visitor Auth Profile Button */}
@@ -255,7 +304,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <User className="w-3.5 h-3.5 text-[#00f0ff]" />
               )}
               <span className="hidden md:inline uppercase font-bold">
-                {user ? user.displayName?.split(' ')[0] || 'SAVED' : 'SIGN IN'}
+                {user ? user.displayName?.split(' ')[0] || t.navbar.saved : t.navbar.sign_in}
               </span>
             </button>
 
@@ -272,7 +321,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-label="Toggle Navigation Menu"
             >
               <span className="font-condensed tracking-widest text-[11px] sm:text-xs uppercase font-bold">
-                {menuOpen ? 'CLOSE' : 'MENU'}
+                {menuOpen ? t.navbar.close : t.navbar.menu}
               </span>
               <div className="flex flex-col gap-1 w-3.5 sm:w-4">
                 <span
@@ -319,7 +368,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-3 text-xs font-mono tracking-widest text-neutral-400">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff] animate-pulse" />
-                  <span className="text-[#00f0ff] font-semibold">NAVIGATION & ARCHIVE</span>
+                  <span className="text-[#00f0ff] font-semibold">{t.navbar.nav_archive}</span>
                 </div>
                 <button
                   type="button"
@@ -327,8 +376,72 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-[11px] cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
-                  <span>ESC</span>
+                  <span>{t.navbar.esc}</span>
                 </button>
+              </div>
+
+              {/* Language Switcher in Mobile Drawer */}
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/10 mb-2 select-none">
+                <div className="flex items-center gap-2 text-xs font-mono text-neutral-300">
+                  <Languages className="w-4 h-4 text-[#00f0ff]" />
+                  <span>{language === 'en' ? 'LANGUAGE / ಭಾಷೆ' : 'ಭಾಷೆ / LANGUAGE'}</span>
+                </div>
+                <div className="flex items-center gap-1 bg-black/60 p-1 rounded-full border border-white/10">
+                  <button
+                    onClick={() => setLanguage('en')}
+                    className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
+                      language === 'en'
+                        ? 'bg-[#00f0ff] text-black shadow-[0_0_12px_#00f0ff]'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => setLanguage('kn')}
+                    className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
+                      language === 'kn'
+                        ? 'bg-[#00f0ff] text-black shadow-[0_0_12px_#00f0ff]'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    ಕನ್ನಡ
+                  </button>
+                </div>
+              </div>
+
+              {/* Theme Switcher in Mobile Drawer */}
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/10 mb-2 select-none">
+                <div className="flex items-center gap-2 text-xs font-mono text-neutral-300">
+                  {isDark ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-sky-400" />
+                  )}
+                  <span>{language === 'en' ? 'THEME / ಥೀಮ್' : 'ಥೀಮ್ / THEME'}</span>
+                </div>
+                <div className="flex items-center gap-1 bg-black/60 p-1 rounded-full border border-white/10">
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-[#00f0ff] text-black shadow-[0_0_12px_#00f0ff]'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    {language === 'en' ? 'Dark' : 'ಡಾರ್ಕ್'}
+                  </button>
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
+                      isLight
+                        ? 'bg-[#00f0ff] text-black shadow-[0_0_12px_#00f0ff]'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    {language === 'en' ? 'Light' : 'ಲೈಟ್'}
+                  </button>
+                </div>
               </div>
 
               {/* Navigation Options - Listed directly at the top in one fixed place */}

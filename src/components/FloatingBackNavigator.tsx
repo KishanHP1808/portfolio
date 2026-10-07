@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowUp, Compass, ChevronUp } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface PhaseInfo {
   id: string;
@@ -28,6 +29,7 @@ export const FloatingBackNavigator: React.FC<FloatingBackNavigatorProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState<number>(0);
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -100,17 +102,17 @@ export const FloatingBackNavigator: React.FC<FloatingBackNavigatorProps> = ({
             onMouseEnter={() => onHoverAction?.('BACK')}
             onMouseLeave={onHoverEnd}
             className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-[#00f0ff] text-white hover:text-black transition-all duration-300 font-mono text-[11px] sm:text-xs uppercase font-bold tracking-wider cursor-pointer shrink-0"
-            title={previousPhase ? `Back to ${previousPhase.name}` : 'Back to Top'}
+            title={previousPhase ? `${t.floatingNav.back} ${isKannada ? (t.floatingNav.phases[previousPhase.id] || previousPhase.name) : previousPhase.name}` : t.floatingNav.back_to_top}
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
             <span>
               {previousPhase ? (
                 <>
-                  <span className="hidden md:inline">BACK TO </span>
-                  <span>{previousPhase.shortName}</span>
+                  <span className="hidden md:inline">{t.floatingNav.back} </span>
+                  <span>{isKannada ? (t.floatingNav.phases[previousPhase.id] || previousPhase.shortName) : previousPhase.shortName}</span>
                 </>
               ) : (
-                'BACK TO TOP'
+                t.floatingNav.back_to_top
               )}
             </span>
           </button>
@@ -119,11 +121,11 @@ export const FloatingBackNavigator: React.FC<FloatingBackNavigatorProps> = ({
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border border-white/10 bg-black/40 text-neutral-300 font-mono text-[10px] sm:text-[11px] tracking-wider truncate shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-ping" />
             <span className="text-[#00f0ff] font-bold">
-              PHASE {currentPhase.number}
+              {t.floatingNav.phase} {currentPhase.number}
             </span>
             <span className="text-neutral-500 hidden sm:inline">//</span>
             <span className="hidden sm:inline uppercase text-neutral-300">
-              {currentPhase.name}
+              {isKannada ? (t.floatingNav.phases[currentPhase.id] || currentPhase.name) : currentPhase.name}
             </span>
           </div>
 
@@ -134,10 +136,10 @@ export const FloatingBackNavigator: React.FC<FloatingBackNavigatorProps> = ({
             onMouseEnter={() => onHoverAction?.('TOP')}
             onMouseLeave={onHoverEnd}
             className="group flex items-center gap-1 p-2 sm:px-3 sm:py-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white hover:text-black text-neutral-300 transition-all duration-300 font-mono text-[11px] sm:text-xs font-semibold cursor-pointer shrink-0"
-            title="Scroll to Top (Hero)"
+            title={t.floatingNav.back_to_top}
           >
             <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5" />
-            <span className="hidden sm:inline">TOP</span>
+            <span className="hidden sm:inline">{t.floatingNav.top}</span>
           </button>
         </motion.div>
       )}

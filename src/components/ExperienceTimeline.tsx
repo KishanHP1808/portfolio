@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Calendar, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { EXPERIENCES } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ExperienceTimelineProps {
   onHoverAction?: (text: string) => void;
@@ -12,31 +13,43 @@ export const ExperienceTimeline: React.FC<ExperienceTimelineProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
+
   return (
     <section id="experience" className="relative w-full py-28 md:py-36 px-6 md:px-12 lg:px-16 border-t border-white/10 select-none">
       <div className="max-w-[1700px] mx-auto">
         {/* Section Header */}
-        <div className="mb-20 md:mb-28 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-20 md:mb-28 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8"
+        >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>CHRONOLOGICAL TRAJECTORY</span>
+              <span>{t.experience.badge}</span>
             </div>
             <h2 className="font-display text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
-              EXPERIENCE
+              {t.experience.title}
             </h2>
           </div>
 
           <div className="font-mono text-xs text-neutral-400">
-            <span>CAREER MILESTONES [2024 — 2026]</span>
+            <span>CAREER MILESTONES [2025 — 2026]</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Minimal Editorial Timeline with Colossal Year Numbers */}
         <div className="space-y-16 md:space-y-24">
           {EXPERIENCES.map((exp, idx) => (
-            <div
+            <motion.div
               key={exp.year}
+              initial={{ opacity: 0, y: 45 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-70px' }}
+              transition={{ duration: 0.8, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
               onMouseEnter={() => onHoverAction?.(exp.year)}
               onMouseLeave={onHoverEnd}
               className="group relative pt-8 border-t border-white/10 hover:border-[#00f0ff]/60 transition-colors duration-500"
@@ -90,7 +103,7 @@ export const ExperienceTimeline: React.FC<ExperienceTimelineProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

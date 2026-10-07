@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { SKILLS } from '../data/portfolioData';
 import { SkillItem, GitWork } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface GitHubStats {
   username: string;
@@ -49,6 +50,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
   onHoverAction,
   onHoverEnd,
 }) => {
+  const { t, isKannada } = useLanguage();
   // Default to Python or React
   const [activeSkill, setActiveSkill] = useState<SkillItem>(SKILLS[0]);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -145,14 +147,20 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
     >
       <div className="max-w-[1700px] mx-auto">
         {/* Header Metadata */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
+        >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#00f0ff] uppercase mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>TECHNICAL ARSENAL // VERIFIED ON GITHUB</span>
+              <span>{t.skills.badge} // VERIFIED ON GITHUB</span>
             </div>
             <h2 className="font-display text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter">
-              CAPABILITIES
+              {t.skills.title}
             </h2>
           </div>
 
@@ -172,29 +180,53 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
 
             {/* Category Filter Pills */}
             <div className="flex flex-wrap gap-2 text-xs font-mono">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  id={`skill-filter-${cat.toLowerCase().replace(/[\s&]+/g, '-')}`}
-                  onClick={() => {
-                    setSelectedCategory(cat);
-                    setIsUserInteracting(true);
-                  }}
-                  className={`px-4 py-2 rounded-full border transition-all cursor-pointer ${
-                    selectedCategory === cat
-                      ? 'border-[#00f0ff] bg-[#00f0ff]/15 text-[#00f0ff] font-semibold shadow-[0_0_15px_rgba(0,240,255,0.25)]'
-                      : 'border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/30'
-                  }`}
-                >
-                  {cat.toUpperCase()}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const label = isKannada
+                  ? cat === 'ALL'
+                    ? t.skills.all
+                    : cat === 'Frontend'
+                    ? t.skills.frontend
+                    : cat === 'Backend'
+                    ? t.skills.backend
+                    : cat === 'Design'
+                    ? t.skills.design
+                    : cat === 'Tools & Architecture'
+                    ? t.skills.tools
+                    : cat === 'AI & ML'
+                    ? t.skills.ai_ml
+                    : cat
+                  : cat.toUpperCase();
+
+                return (
+                  <button
+                    key={cat}
+                    id={`skill-filter-${cat.toLowerCase().replace(/[\s&]+/g, '-')}`}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setIsUserInteracting(true);
+                    }}
+                    className={`px-4 py-2 rounded-full border transition-all cursor-pointer ${
+                      selectedCategory === cat
+                        ? 'border-[#00f0ff] bg-[#00f0ff]/15 text-[#00f0ff] font-semibold shadow-[0_0_15px_rgba(0,240,255,0.25)]'
+                        : 'border-white/10 bg-white/[0.02] text-neutral-400 hover:text-white hover:border-white/30'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Dynamic Dominant Skill Hero Display */}
-        <div className="relative w-full rounded-3xl border border-white/15 bg-neutral-950/90 p-6 md:p-12 lg:p-14 mb-16 overflow-hidden glow-aqua-subtle">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          className="relative w-full rounded-3xl border border-white/15 bg-neutral-950/90 p-6 md:p-12 lg:p-14 mb-16 overflow-hidden glow-aqua-subtle"
+        >
           {/* Subtle background ambient glow */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00f0ff]/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -406,10 +438,16 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Dynamic Typography Skill Matrix (Click or press to inspect GitHub work) */}
-        <div className="mb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-20"
+        >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div className="text-xs font-mono tracking-widest uppercase text-neutral-400 flex items-center gap-2">
               <Code2 className="w-3.5 h-3.5 text-[#00f0ff]" />
@@ -503,7 +541,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Kinetic Infinite Typography Ticker */}
         <div className="relative w-full border-y border-white/10 py-6 overflow-hidden">
