@@ -42,7 +42,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ cursorState }) => {
         dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
       }
 
-      if (!isVisible) setIsVisible(true);
+      setIsVisible(true);
     };
 
     const handleMouseLeave = () => {
@@ -63,26 +63,51 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ cursorState }) => {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
     };
-  }, [isVisible]);
+  }, []);
 
-  // Ultra-fluid 180 FPS hardware-synchronized animation loop
+  // Ultra-fluid hardware-synchronized animation loop (sleeps when idle)
   useEffect(() => {
     if (isTouchDevice) return;
 
-    let animFrameId: number;
+    let animFrameId: number = 0;
+    let isRunning = false;
     let lastTime = 0;
+
+    const startLoop = () => {
+      if (!isRunning) {
+        isRunning = true;
+        lastTime = performance.now();
+        animFrameId = requestAnimationFrame(animateLoop);
+      }
+    };
+
+    const handleMouseMove = () => {
+      startLoop();
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     const animateLoop = (time: number) => {
       const rawDt = lastTime > 0 ? (time - lastTime) / 1000 : 0.016;
       const dt = Math.max(0.001, Math.min(Number.isFinite(rawDt) ? rawDt : 0.016, 0.1));
       lastTime = time;
 
-      // Adaptive lerp factor calibrated for 180 FPS responsiveness
-      // (approx 20% smoothing at 60Hz, scaled continuously across 120-240Hz)
       const lerpSpeed = 1 - Math.exp(-22 * dt);
+      const dx = mousePos.current.x - ringPos.current.x;
+      const dy = mousePos.current.y - ringPos.current.y;
 
-      ringPos.current.x += (mousePos.current.x - ringPos.current.x) * lerpSpeed;
-      ringPos.current.y += (mousePos.current.y - ringPos.current.y) * lerpSpeed;
+      if (Math.abs(dx) < 0.25 && Math.abs(dy) < 0.25) {
+        ringPos.current.x = mousePos.current.x;
+        ringPos.current.y = mousePos.current.y;
+        if (ringRef.current) {
+          ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%)`;
+        }
+        isRunning = false;
+        return;
+      }
+
+      ringPos.current.x += dx * lerpSpeed;
+      ringPos.current.y += dy * lerpSpeed;
 
       if (ringRef.current) {
         ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%)`;
@@ -91,8 +116,12 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ cursorState }) => {
       animFrameId = requestAnimationFrame(animateLoop);
     };
 
-    animFrameId = requestAnimationFrame(animateLoop);
-    return () => cancelAnimationFrame(animFrameId);
+    startLoop();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animFrameId);
+    };
   }, [isTouchDevice]);
 
   if (isTouchDevice || !isVisible) return null;

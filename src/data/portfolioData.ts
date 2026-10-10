@@ -167,6 +167,7 @@ export const PROJECTS: Project[] = [
     title: "AGRIGUARD",
     subtitle: "AI-Powered Crop Pathology Defense & Agricultural Intelligence Suite",
     category: "Full Stack • Computer Vision & AgroTech",
+    filterCategories: ["Full Stack", "Frontend"],
     year: "2026",
     role: "Full Stack Architect & Lead AI/UI Engineer",
     technologies: ["Python", "Machine Learning", "FastAPI / Django", "React", "Tailwind CSS", "Vercel Deployment"],
@@ -192,6 +193,7 @@ export const PROJECTS: Project[] = [
     title: "FOOTBALL AUCTION",
     subtitle: "High-Concurrency Real-Time Player Bidding Arena",
     category: "Full Stack • Real-Time Engine",
+    filterCategories: ["Full Stack", "Frontend", "UI/UX"],
     year: "2026",
     role: "Full Stack Architect",
     technologies: ["Python", "Django", "WebSockets", "React", "Tailwind CSS", "PostgreSQL", "Vercel Deployment"],
@@ -217,6 +219,7 @@ export const PROJECTS: Project[] = [
     title: "AI ASSISTANT",
     subtitle: "Autonomous Knowledge Retrieval & Multi-Document Synthesis Engine",
     category: "AI Engineering • Full Stack",
+    filterCategories: ["Full Stack", "UI/UX"],
     year: "2026",
     role: "Full Stack & AI Engineer",
     technologies: ["Python", "LLMs / NLP", "FastAPI", "React", "TypeScript", "Tailwind CSS", "Vercel Deployment"],
@@ -235,6 +238,32 @@ export const PROJECTS: Project[] = [
     accentColor: "#38bdf8",
     liveUrl: "https://ai-assistant-orcin-alpha.vercel.app/",
     githubUrl: "https://github.com/KishanHP1808/Personal-Research-Assistant"
+  },
+  {
+    id: "kinetic-portfolio",
+    number: "04",
+    title: "KINETIC PORTFOLIO",
+    subtitle: "High-Performance Dark-Mode Architecture & Interactive Micro-Physics System",
+    category: "Frontend • UI/UX Design System",
+    filterCategories: ["Frontend", "UI/UX"],
+    year: "2026",
+    role: "Lead Frontend Architect & UI/UX Designer",
+    technologies: ["React 19", "TypeScript", "Tailwind CSS", "Framer Motion", "Figma", "Vercel"],
+    description: "A precision-crafted digital portfolio platform engineered with 3D holographic tilt projection, kinetic spring typography, and fluid multi-touch interactions.",
+    longDescription: "Built from scratch to demonstrate production-grade frontend discipline, this portfolio combines custom typography tokens, GPU-accelerated motion choreography, and high-performance glassmorphism. It features real-time Firebase telemetry, dynamic Google Drive certificate synchronization, and responsive layouts calibrated for all device viewports.",
+    highlights: [
+      "Custom HoloTiltCard component with physics-based 3D perspective transforms",
+      "Sub-frame 60+ FPS layout transitions with Motion v12 and zero cumulative layout shift",
+      "Bespoke dark aesthetic design system designed in Figma with accessibility-tested contrast",
+      "Full localization support with Kannada and English multi-language architecture"
+    ],
+    challenge: "Achieving cinematic visual polish and rich continuous physics animations while maintaining sub-second initial load speeds and zero interface latency.",
+    solution: "Engineered code-split component boundaries, hardware-accelerated CSS transforms, lightweight SVG iconography, and strict memoized state handlers.",
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1600&auto=format&fit=crop",
+    secondaryImage: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
+    accentColor: "#00f0ff",
+    liveUrl: "https://kishanhp1808.vercel.app/",
+    githubUrl: "https://github.com/KishanHP1808"
   }
 ];
 

@@ -18,6 +18,7 @@ export interface Project {
   accentColor: string;
   liveUrl?: string;
   githubUrl?: string;
+  filterCategories?: ('Frontend' | 'Full Stack' | 'UI/UX')[];
 }
 
 export interface GitWork {

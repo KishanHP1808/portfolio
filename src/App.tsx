@@ -104,10 +104,10 @@ export default function App() {
 
     try {
       lenis = new Lenis({
-        duration: 0.95,
+        duration: 0.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        wheelMultiplier: 1.05,
-        touchMultiplier: 1.6,
+        wheelMultiplier: 1.0,
+        touchMultiplier: 1.2,
         smoothWheel: true,
         autoResize: true,
       });

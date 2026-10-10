@@ -68,9 +68,11 @@ service cloud.firestore {
         && (!('avatarUrl' in data) || data.avatarUrl is string);
     }
 
-    // User Profiles: Private to authenticated owner
+    // User Profiles: Private to authenticated owner with strict schema verification
     match /users/{userId} {
-      allow read, write: if isOwner(userId) && isValidUserProfile(incoming(), userId);
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUserProfile(incoming(), userId);
+      allow delete: if false;
     }
 
     // Contact Inquiries: Create-only for visitors, private to avoid public leak

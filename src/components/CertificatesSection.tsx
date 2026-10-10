@@ -204,8 +204,14 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
         {/* TAB 1: LIVE GOOGLE DRIVE VAULT */}
         {activeTab === 'drive' && (
           <div className="space-y-6">
-            {/* Real-Time Sync Informational Callout */}
-            <div className="p-6 md:p-8 rounded-3xl bg-neutral-950/80 border border-[#00f0ff]/30 shadow-[0_0_40px_rgba(0,240,255,0.1)] flex flex-col lg:flex-row lg:items-center justify-between gap-6 glow-aqua-subtle">
+            {/* Real-Time Sync Informational Callout - Fades and slides up on scroll */}
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+              className="p-6 md:p-8 rounded-3xl bg-neutral-950/80 border border-[#00f0ff]/30 shadow-[0_0_40px_rgba(0,240,255,0.1)] flex flex-col lg:flex-row lg:items-center justify-between gap-6 glow-aqua-subtle"
+            >
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/30 flex items-center justify-center text-[#00f0ff] shrink-0 mt-1">
                   <Cloud className="w-6 h-6" />
@@ -254,10 +260,16 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Embedded Google Drive Interactive Container */}
-            <div className="relative rounded-3xl bg-neutral-950 border border-white/10 overflow-hidden shadow-2xl">
+            {/* Embedded Google Drive Interactive Container - Fades and slides up on scroll */}
+            <motion.div
+              initial={{ opacity: 0, y: 45 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-70px' }}
+              transition={{ duration: 0.85, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative rounded-3xl bg-neutral-950 border border-white/10 overflow-hidden shadow-2xl"
+            >
               {/* Drive Toolbar */}
               <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-white/10 bg-black/60 text-xs font-mono">
                 <div className="flex items-center gap-3 text-neutral-400">
@@ -362,15 +374,21 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   </a>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
 
         {/* TAB 2: INDEXED CREDENTIAL MATRIX */}
         {activeTab === 'matrix' && (
           <div className="space-y-12">
-            {/* Category Filters & Credly Badges Access */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/5 pb-4">
+            {/* Category Filters & Credly Badges Access - Fades and slides up on scroll */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/5 pb-4"
+            >
               <div className="flex flex-wrap items-center gap-2 md:gap-3">
                 {categories.map((cat) => (
                   <button
@@ -413,116 +431,134 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
                   <ExternalLink className="w-3 h-3 text-neutral-500" />
                 </a>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Certificates Column Grid with 3D Holographic Perspective */}
+            {/* Certificates Column Grid with 3D Holographic Perspective & Scroll Reveal Animations */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {filteredCerts.map((cert) => (
-                <HoloTiltCard
+              {filteredCerts.map((cert, idx) => (
+                <motion.div
                   key={cert.id}
-                  tiltIntensity={10}
-                  className="rounded-3xl"
-                  onClick={() => setSelectedCert(cert)}
-                  onMouseEnter={() => onHoverAction?.('VERIFY')}
-                  onMouseLeave={onHoverEnd}
+                  initial={{ opacity: 0, y: 45 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{
+                    duration: 0.7,
+                    delay: (idx % 3) * 0.12,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="h-full"
                 >
-                  <div className="relative p-8 md:p-10 rounded-3xl bg-neutral-950/80 border border-white/10 hover:border-[#00f0ff]/70 transition-all duration-500 flex flex-col justify-between h-full hover:shadow-[0_0_40px_rgba(0,240,255,0.2)] glow-aqua-subtle">
-                    {/* Card Top: Number, Issuer Badge & Year */}
-                    <div>
-                      <div className="flex items-center justify-between gap-4 mb-6">
-                        <span className="font-display text-3xl text-neutral-600 group-hover:text-white transition-colors duration-300">
-                          {cert.number}
-                        </span>
+                  <HoloTiltCard
+                    tiltIntensity={10}
+                    className="rounded-3xl h-full"
+                    onClick={() => setSelectedCert(cert)}
+                    onMouseEnter={() => onHoverAction?.('VERIFY')}
+                    onMouseLeave={onHoverEnd}
+                  >
+                    <div className="relative p-8 md:p-10 rounded-3xl bg-neutral-950/80 border border-white/10 hover:border-[#00f0ff]/70 transition-all duration-500 flex flex-col justify-between h-full hover:shadow-[0_0_40px_rgba(0,240,255,0.2)] glow-aqua-subtle">
+                      {/* Card Top: Number, Issuer Badge & Year */}
+                      <div>
+                        <div className="flex items-center justify-between gap-4 mb-6">
+                          <span className="font-display text-3xl text-neutral-600 group-hover:text-white transition-colors duration-300">
+                            {cert.number}
+                          </span>
 
-                        <div className="flex items-center gap-2">
-                          {cert.badge && (
-                            <span className="px-2.5 py-1 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-[10px] font-mono tracking-widest uppercase">
-                              {cert.badge}
+                          <div className="flex items-center gap-2">
+                            {cert.badge && (
+                              <span className="px-2.5 py-1 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-[10px] font-mono tracking-widest uppercase">
+                                {cert.badge}
+                              </span>
+                            )}
+                            <span className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-neutral-400 text-[11px] font-mono">
+                              {cert.issueDate}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Issuer Name */}
+                        <div className="flex items-center gap-2 text-xs font-mono text-[#00f0ff] uppercase tracking-wider mb-2">
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          <span>{cert.issuer}</span>
+                        </div>
+
+                        {/* Certificate Title */}
+                        <h3 className="font-display text-2xl md:text-3xl text-white uppercase tracking-tight group-hover:text-[#00f0ff] transition-colors duration-300 mb-4 leading-snug">
+                          {cert.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-neutral-400 text-sm leading-relaxed mb-6 font-light">
+                          {cert.description}
+                        </p>
+                      </div>
+
+                      {/* Card Bottom: Skills & Action Link */}
+                      <div className="pt-6 border-t border-white/10 space-y-4">
+                        {/* Skill Tags */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {cert.skills.slice(0, 4).map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-[11px] font-mono text-neutral-400"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {cert.skills.length > 4 && (
+                            <span className="px-2 py-1 rounded-md bg-white/[0.03] border border-white/10 text-[10px] font-mono text-neutral-500">
+                              +{cert.skills.length - 4} more
                             </span>
                           )}
-                          <span className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-neutral-400 text-[11px] font-mono">
-                            {cert.issueDate}
-                          </span>
                         </div>
-                      </div>
 
-                      {/* Issuer Name */}
-                      <div className="flex items-center gap-2 text-xs font-mono text-[#00f0ff] uppercase tracking-wider mb-2">
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>{cert.issuer}</span>
-                      </div>
-
-                      {/* Certificate Title */}
-                      <h3 className="font-display text-2xl md:text-3xl text-white uppercase tracking-tight group-hover:text-[#00f0ff] transition-colors duration-300 mb-4 leading-snug">
-                        {cert.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-neutral-400 text-sm leading-relaxed mb-6 font-light">
-                        {cert.description}
-                      </p>
-                    </div>
-
-                    {/* Card Bottom: Skills & Action Link */}
-                    <div className="pt-6 border-t border-white/10 space-y-4">
-                      {/* Skill Tags */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {cert.skills.slice(0, 4).map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-[11px] font-mono text-neutral-400"
-                          >
-                            {skill}
+                        {/* Verification CTA */}
+                        <div className="flex items-center justify-between pt-2 text-xs font-mono">
+                          <span className="text-neutral-500 group-hover:text-neutral-300 transition-colors">
+                            ID: {cert.credentialId}
                           </span>
-                        ))}
-                        {cert.skills.length > 4 && (
-                          <span className="px-2 py-1 rounded-md bg-white/[0.03] border border-white/10 text-[10px] font-mono text-neutral-500">
-                            +{cert.skills.length - 4} more
-                          </span>
-                        )}
-                      </div>
 
-                      {/* Verification CTA */}
-                      <div className="flex items-center justify-between pt-2 text-xs font-mono">
-                        <span className="text-neutral-500 group-hover:text-neutral-300 transition-colors">
-                          ID: {cert.credentialId}
-                        </span>
+                          <div className="flex items-center gap-3">
+                            <a
+                              href={CERTIFICATES_DRIVE_CONFIG.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-neutral-400 hover:text-[#00f0ff] transition-colors"
+                              title="View In Google Drive"
+                            >
+                              <FolderArchive className="w-3.5 h-3.5" />
+                              <span>DRIVE</span>
+                            </a>
 
-                        <div className="flex items-center gap-3">
-                          <a
-                            href={CERTIFICATES_DRIVE_CONFIG.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 text-neutral-400 hover:text-[#00f0ff] transition-colors"
-                            title="View In Google Drive"
-                          >
-                            <FolderArchive className="w-3.5 h-3.5" />
-                            <span>DRIVE</span>
-                          </a>
-
-                          <a
-                            href={cert.credentialUrl || PERSONAL_INFO.socials.linkedin}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1.5 text-[#00f0ff] hover:text-white transition-colors"
-                          >
-                            <span>VERIFY</span>
-                            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                          </a>
+                            <a
+                              href={cert.credentialUrl || PERSONAL_INFO.socials.linkedin}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1.5 text-[#00f0ff] hover:text-white transition-colors"
+                            >
+                              <span>VERIFY</span>
+                              <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </HoloTiltCard>
+                  </HoloTiltCard>
+                </motion.div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Bottom Callout Banner */}
-        <div className="mt-16 p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-6">
+        {/* Bottom Callout Banner - Fades and slides up on scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-16 p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-6"
+        >
           <div className="flex items-center gap-5">
             <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center text-[#00f0ff] shrink-0">
               <Sparkles className="w-6 h-6" />
@@ -586,7 +622,7 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
               <ExternalLink className="w-3.5 h-3.5 text-neutral-500" />
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Modal / Certificate Detail Overlay */}

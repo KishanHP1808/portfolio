@@ -154,6 +154,19 @@ export const ElectricThunderCanvas: React.FC = () => {
       }
 
       flashAlpha = 0.35;
+      startAnimation();
+    };
+
+    let animId: number = 0;
+    let animRunning = false;
+    let lastRenderTime = 0;
+
+    const startAnimation = () => {
+      if (!animRunning) {
+        animRunning = true;
+        lastRenderTime = performance.now();
+        animId = requestAnimationFrame(render);
+      }
     };
 
     // Event listener to trigger lightning programmatically
@@ -172,10 +185,13 @@ export const ElectricThunderCanvas: React.FC = () => {
       }
     }, 12000);
 
-    let animId: number;
-    let lastRenderTime = 0;
-
     const render = (currentTime: number) => {
+      if (bolts.length === 0 && sparks.length === 0 && flashAlpha <= 0.005) {
+        ctx.clearRect(0, 0, width, height);
+        animRunning = false;
+        return;
+      }
+
       const rawElapsed = lastRenderTime > 0 ? (currentTime - lastRenderTime) / 1000 : 0.016;
       const elapsed = Math.max(0.001, Math.min(Number.isFinite(rawElapsed) ? rawElapsed : 0.016, 0.05));
       lastRenderTime = currentTime;
@@ -248,15 +264,11 @@ export const ElectricThunderCanvas: React.FC = () => {
         spark.life -= dt;
 
         const alpha = Math.max(0, spark.life / spark.maxLife);
-        ctx.save();
         ctx.fillStyle = spark.color;
         ctx.globalAlpha = alpha;
-        ctx.shadowColor = spark.color;
-        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(spark.x, spark.y, spark.size * alpha, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
 
         if (spark.life <= 0) {
           sparks.splice(i, 1);
@@ -265,8 +277,6 @@ export const ElectricThunderCanvas: React.FC = () => {
 
       animId = requestAnimationFrame(render);
     };
-
-    animId = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animId);

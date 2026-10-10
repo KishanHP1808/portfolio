@@ -20,27 +20,29 @@ export const BackToTopButton: React.FC<BackToTopButtonProps> = ({
 
   useEffect(() => {
     let ticking = false;
+    let prevVisible = false;
+    let prevProgress = 0;
 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          const heroEl = document.getElementById('hero');
+          const scrollY = window.scrollY || document.documentElement.scrollTop;
+          const nextVisible = scrollY > 550;
 
-          // Check if scrolled past the HeroSection
-          if (heroEl) {
-            const rect = heroEl.getBoundingClientRect();
-            // Appears only after user scrolls past the HeroSection
-            setIsVisible(rect.bottom <= 40);
-          } else {
-            setIsVisible(scrollY > 600);
+          if (nextVisible !== prevVisible) {
+            prevVisible = nextVisible;
+            setIsVisible(nextVisible);
           }
 
-          // Compute scroll progress percentage
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          if (docHeight > 0) {
-            const progress = Math.min(100, Math.max(0, Math.round((scrollY / docHeight) * 100)));
-            setScrollProgress(progress);
+          if (nextVisible) {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (docHeight > 0) {
+              const progress = Math.min(100, Math.max(0, Math.round((scrollY / docHeight) * 100)));
+              if (Math.abs(progress - prevProgress) >= 1) {
+                prevProgress = progress;
+                setScrollProgress(progress);
+              }
+            }
           }
 
           ticking = false;

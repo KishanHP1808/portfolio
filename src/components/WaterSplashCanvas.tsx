@@ -53,18 +53,18 @@ export const WaterSplashCanvas: React.FC = () => {
     const droplets: Droplet[] = [];
     const bubbles: Bubble[] = [];
 
-    // Initialize gentle background rising bubbles
-    const bubbleCount = Math.min(30, Math.floor(width / 45));
+    // Initialize gentle background rising bubbles (optimized count)
+    const bubbleCount = Math.min(8, Math.max(4, Math.floor(width / 180)));
     for (let i = 0; i < bubbleCount; i++) {
       bubbles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: 1.5 + Math.random() * 3.5,
-        speed: 0.3 + Math.random() * 0.7,
-        wiggleSpeed: 0.02 + Math.random() * 0.03,
-        wiggleDist: 15 + Math.random() * 25,
+        radius: 1.5 + Math.random() * 2.5,
+        speed: 0.25 + Math.random() * 0.45,
+        wiggleSpeed: 0.015 + Math.random() * 0.02,
+        wiggleDist: 10 + Math.random() * 15,
         wiggleOffset: Math.random() * Math.PI * 2,
-        alpha: 0.15 + Math.random() * 0.35,
+        alpha: 0.12 + Math.random() * 0.2,
       });
     }
 
@@ -123,12 +123,11 @@ export const WaterSplashCanvas: React.FC = () => {
       triggerSplash(e.clientX, e.clientY, 'click');
     };
 
-    // Gliding Wake on Mouse Move
+    // Gliding Wake on Mouse Move (Throttled for high performance)
     let lastMoveTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
       const now = performance.now();
-      if (now - lastMoveTime > 40) {
-        // limit wake creation rate
+      if (now - lastMoveTime > 140) {
         triggerSplash(e.clientX, e.clientY, 'move');
         lastMoveTime = now;
       }
@@ -153,7 +152,6 @@ export const WaterSplashCanvas: React.FC = () => {
       ctx.clearRect(0, 0, width, height);
 
       // --- 1. Draw Rising Floating Ambient Bubbles ---
-      ctx.save();
       for (let i = 0; i < bubbles.length; i++) {
         const b = bubbles[i];
         b.y -= b.speed * dt;
@@ -167,30 +165,15 @@ export const WaterSplashCanvas: React.FC = () => {
           b.x = Math.random() * width;
         }
 
-        // Draw bubble with refraction glow
-        const grad = ctx.createRadialGradient(
-          currentX - b.radius * 0.3,
-          b.y - b.radius * 0.3,
-          b.radius * 0.1,
-          currentX,
-          b.y,
-          b.radius
-        );
-        grad.addColorStop(0, `rgba(255, 255, 255, ${b.alpha * 0.9})`);
-        grad.addColorStop(0.4, `rgba(0, 240, 255, ${b.alpha * 0.6})`);
-        grad.addColorStop(1, `rgba(0, 180, 216, ${b.alpha * 0.1})`);
-
-        ctx.fillStyle = grad;
+        ctx.fillStyle = `rgba(0, 240, 255, ${b.alpha * 0.35})`;
         ctx.beginPath();
         ctx.arc(currentX, b.y, b.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Delicate outer bubble rim
-        ctx.strokeStyle = `rgba(0, 240, 255, ${b.alpha * 0.4})`;
-        ctx.lineWidth = 0.6;
+        ctx.strokeStyle = `rgba(56, 189, 248, ${b.alpha * 0.5})`;
+        ctx.lineWidth = 0.5;
         ctx.stroke();
       }
-      ctx.restore();
 
       // --- 2. Draw Expanding Water Ripples ---
       for (let i = ripples.length - 1; i >= 0; i--) {
@@ -204,28 +187,24 @@ export const WaterSplashCanvas: React.FC = () => {
         }
 
         const ringRadius = Math.max(0.1, r.radius);
-        ctx.save();
         ctx.beginPath();
         ctx.arc(r.x, r.y, ringRadius, 0, Math.PI * 2);
         ctx.strokeStyle = r.color;
         ctx.globalAlpha = Math.max(0, r.opacity);
         ctx.lineWidth = r.lineWidth;
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 10;
         ctx.stroke();
 
         // Inner secondary refraction ring for fluid depth
-        if (ringRadius > 12) {
+        if (ringRadius > 14) {
           ctx.beginPath();
           ctx.arc(r.x, r.y, Math.max(0.1, ringRadius * 0.72), 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.globalAlpha = Math.max(0, r.opacity * 0.5);
-          ctx.lineWidth = 0.8;
-          ctx.shadowBlur = 4;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.globalAlpha = Math.max(0, r.opacity * 0.45);
+          ctx.lineWidth = 0.7;
           ctx.stroke();
         }
-        ctx.restore();
       }
+      ctx.globalAlpha = 1;
 
       // --- 3. Draw Water Droplets (Splash Particles) ---
       const dropletDrag = Math.pow(0.98, dt);
@@ -262,8 +241,6 @@ export const WaterSplashCanvas: React.FC = () => {
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
         ctx.fillStyle = d.color;
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 12;
         ctx.fill();
 
         // Glistening highlight on droplet

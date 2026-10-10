@@ -168,10 +168,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             email: formData.email,
             message: detailedMessage,
             subject: `[Verified Client] ${formData.projectType} Inquiry from ${formData.name}`,
+            botTrap: formData.botTrap,
           }),
         });
 
         const backendData = await backendRes.json().catch(() => null);
+        if (backendRes.status === 429) {
+          setIsSubmitting(false);
+          setSubmitError(backendData?.message || 'Security Rate Limit: Too many transmissions sent recently. Please wait before retrying.');
+          return;
+        }
         if (backendRes.ok && backendData) {
           backendSuccess = true;
           setDeliveryResult({
@@ -975,6 +981,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         {/* Legal & Anti-Fraud Policy Bar */}
         <div className="pt-6 mt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-neutral-500">
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <span className="flex items-center gap-1.5 text-[#00f0ff]/90">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#00f0ff]" />
+              <span>ISOLATED BACKEND PROXY &amp; ENCRYPTED CHANNELS</span>
+            </span>
+            <span className="hidden sm:inline">•</span>
             <span>LEGAL JURISDICTION: MYSURU, KARNATAKA</span>
             <span className="hidden sm:inline">•</span>
             <button
@@ -982,7 +993,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               onClick={() => window.dispatchEvent(new CustomEvent('open-terms-modal'))}
               className="hover:text-[#00f0ff] transition-colors cursor-pointer uppercase underline decoration-white/20 underline-offset-4"
             >
-              TERMS & CONDITIONS
+              TERMS &amp; CONDITIONS
             </button>
             <span>•</span>
             <button
@@ -998,12 +1009,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               onClick={() => window.dispatchEvent(new CustomEvent('open-terms-modal'))}
               className="hover:text-[#00f0ff] transition-colors cursor-pointer uppercase underline decoration-white/20 underline-offset-4"
             >
-              CLIENT VERIFICATION & ANTI-FRAUD
+              CLIENT VERIFICATION &amp; ANTI-FRAUD
             </button>
           </div>
 
           <div className="text-neutral-500 text-[10px]">
-            GENUINE COMMERCIAL CLIENTS ONLY • SPAM DISCARDED
+            GENUINE COMMERCIAL CLIENTS ONLY • AUTOMATED SPAM FILTERED
           </div>
         </div>
       </div>

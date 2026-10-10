@@ -9,24 +9,41 @@ export const AtmosphericBackground: React.FC = () => {
   const currentPos = useRef({ x: window.innerWidth * 0.5, y: window.innerHeight * 0.3 });
 
   useEffect(() => {
+    let animId: number = 0;
+    let isRunning = false;
+    let lastTime = performance.now();
+
+    const startLoop = () => {
+      if (!isRunning) {
+        isRunning = true;
+        lastTime = performance.now();
+        animId = requestAnimationFrame(animateGlow);
+      }
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
       targetPos.current.x = e.clientX;
       targetPos.current.y = e.clientY;
+      startLoop();
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-    let animId: number;
-    let lastTime = performance.now();
 
     const animateGlow = (time: number) => {
       const dt = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
 
-      // Smooth buttery lerp at 180 FPS
       const factor = 1 - Math.exp(-6 * dt);
-      currentPos.current.x += (targetPos.current.x - currentPos.current.x) * factor;
-      currentPos.current.y += (targetPos.current.y - currentPos.current.y) * factor;
+      const dx = targetPos.current.x - currentPos.current.x;
+      const dy = targetPos.current.y - currentPos.current.y;
+
+      if (Math.abs(dx) < 0.8 && Math.abs(dy) < 0.8) {
+        isRunning = false;
+        return;
+      }
+
+      currentPos.current.x += dx * factor;
+      currentPos.current.y += dy * factor;
 
       if (glowRef.current) {
         glowRef.current.style.transform = `translate3d(${currentPos.current.x}px, ${currentPos.current.y}px, 0) translate(-50%, -50%)`;
@@ -35,7 +52,7 @@ export const AtmosphericBackground: React.FC = () => {
       animId = requestAnimationFrame(animateGlow);
     };
 
-    animId = requestAnimationFrame(animateGlow);
+    startLoop();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -54,7 +71,7 @@ export const AtmosphericBackground: React.FC = () => {
       {/* Subtle Radial Aqua Glow reacting smoothly to cursor with 180 FPS hardware transform */}
       <div
         ref={glowRef}
-        className={`fixed top-0 left-0 w-[850px] h-[850px] rounded-full blur-[140px] pointer-events-none transition-opacity duration-700 will-change-transform ${
+        className={`fixed top-0 left-0 w-[650px] h-[650px] rounded-full blur-[80px] pointer-events-none transition-opacity duration-700 will-change-transform ${
           isLight ? 'opacity-[0.08]' : 'opacity-[0.16]'
         }`}
         style={{
