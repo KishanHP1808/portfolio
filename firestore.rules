@@ -68,6 +68,19 @@ service cloud.firestore {
         && (!('avatarUrl' in data) || data.avatarUrl is string);
     }
 
+    // Validation for Analytics Events (Button clicks, modal openings, portfolio telemetry)
+    function isValidAnalyticsEvent(data) {
+      return data.keys().hasAll(['eventType', 'eventName', 'timestamp'])
+        && data.eventType is string && data.eventType.size() >= 1 && data.eventType.size() <= 64
+        && data.eventName is string && data.eventName.size() >= 1 && data.eventName.size() <= 128
+        && data.timestamp is string && data.timestamp.size() <= 64
+        && (!('target' in data) || (data.target is string && data.target.size() <= 128))
+        && (!('category' in data) || (data.category is string && data.category.size() <= 64))
+        && (!('sessionId' in data) || (data.sessionId is string && data.sessionId.size() <= 128))
+        && (!('path' in data) || (data.path is string && data.path.size() <= 256))
+        && (!('metadata' in data) || data.metadata is map);
+    }
+
     // User Profiles: Private to authenticated owner with strict schema verification
     match /users/{userId} {
       allow read: if isOwner(userId);
@@ -101,6 +114,12 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isValidId(entryId) && isValidGuestbook(incoming());
       allow update, delete: if false;
+    }
+
+    // Analytics Events: Write-only telemetry log (no public read to prevent data leakage)
+    match /analytics_events/{eventId} {
+      allow create: if isValidId(eventId) && isValidAnalyticsEvent(incoming());
+      allow read, update, delete: if false;
     }
   }
 }

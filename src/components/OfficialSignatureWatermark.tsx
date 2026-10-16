@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, CheckCircle2, Sparkles, X, ChevronUp, ExternalLink, Award } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { trackButtonClick } from '../services/analyticsService';
 
 interface OfficialSignatureWatermarkProps {
   onHoverAction?: (text: string) => void;
@@ -22,7 +23,7 @@ export const OfficialSignatureWatermark: React.FC<OfficialSignatureWatermarkProp
   return (
     <div
       id="official-signature-watermark"
-      className="fixed bottom-4 right-4 sm:bottom-5 sm:right-6 z-35 select-none pointer-events-auto"
+      className="fixed bottom-4 right-4 sm:bottom-5 sm:right-6 z-40 select-none pointer-events-auto"
     >
       <AnimatePresence>
         {isExpanded ? (

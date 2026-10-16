@@ -133,6 +133,56 @@
         }
       },
       "required": ["name", "role", "message", "createdAt"]
+    },
+    "analytics_event": {
+      "title": "Analytics Event",
+      "description": "Lightweight telemetry log of visitor interactions such as button clicks and modal openings",
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Type of event (button_click, modal_open, etc.)"
+        },
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Descriptive identifier of the action"
+        },
+        "timestamp": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "ISO timestamp of event occurrence"
+        },
+        "target": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Optional UI element target identifier"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Optional category (modal, button, filter, etc.)"
+        },
+        "sessionId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Ephemeral browser session identifier"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Current URL route/hash path"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Arbitrary key-value metadata associated with the event"
+        }
+      },
+      "required": ["eventType", "eventName", "timestamp"]
     }
   },
   "firestore": {
@@ -151,6 +201,10 @@
     "/guestbook/{entryId}": {
       "schema": "guestbook_entry",
       "description": "Public endorsements and visitor guestbook notes"
+    },
+    "/analytics_events/{eventId}": {
+      "schema": "analytics_event",
+      "description": "Write-only telemetry log of visitor interactions"
     }
   }
 }

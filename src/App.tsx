@@ -27,6 +27,7 @@ import { AuthProfileModal } from './components/AuthProfileModal';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { useTheme } from './context/ThemeContext';
 import { Project, CursorState } from './types';
+import { trackModalOpen, trackModalClose, trackProjectAction } from './services/analyticsService';
 
 export default function App() {
   const { theme, isLight } = useTheme();
@@ -45,11 +46,26 @@ export default function App() {
 
   // Global listeners for direct modal opening & URL hash routing
   useEffect(() => {
-    const handleOpenTalk = () => setTalkToHimOpen(true);
-    const handleOpenResume = () => setResumeOpen(true);
-    const handleOpenAuth = () => setAuthModalOpen(true);
-    const handleOpenTerms = () => setTermsOpen(true);
-    const handleOpenPrivacy = () => setPrivacyOpen(true);
+    const handleOpenTalk = () => {
+      setTalkToHimOpen(true);
+      trackModalOpen('talk_to_him', { trigger: 'event' });
+    };
+    const handleOpenResume = () => {
+      setResumeOpen(true);
+      trackModalOpen('resume_modal', { trigger: 'event' });
+    };
+    const handleOpenAuth = () => {
+      setAuthModalOpen(true);
+      trackModalOpen('auth_hub', { trigger: 'event' });
+    };
+    const handleOpenTerms = () => {
+      setTermsOpen(true);
+      trackModalOpen('terms_conditions', { trigger: 'event' });
+    };
+    const handleOpenPrivacy = () => {
+      setPrivacyOpen(true);
+      trackModalOpen('privacy_policy', { trigger: 'event' });
+    };
 
     window.addEventListener('open-talk-to-him', handleOpenTalk);
     window.addEventListener('open-talk-together', handleOpenTalk);
@@ -211,7 +227,11 @@ export default function App() {
 
         {/* Project Showcase (Selected Work) */}
         <ProjectsShowcase
-          onSelectProject={(project) => setSelectedProject(project)}
+          onSelectProject={(project) => {
+            setSelectedProject(project);
+            trackProjectAction('view', project.id, project.title);
+            trackModalOpen('project_detail', { projectId: project.id });
+          }}
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
         />
@@ -244,7 +264,10 @@ export default function App() {
         <ContactSection
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
-          onOpenTalkToHim={() => setTalkToHimOpen(true)}
+          onOpenTalkToHim={() => {
+            setTalkToHimOpen(true);
+            trackModalOpen('talk_to_him', { trigger: 'contact_section' });
+          }}
         />
 
         {/* Global Floating Ocean Wave Sound Controller */}
@@ -255,24 +278,29 @@ export default function App() {
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
         />
-
-        {/* Persistent Back to Top Button (Appears past HeroSection) */}
-        <BackToTopButton
-          onHoverAction={handleHoverAction}
-          onHoverEnd={handleHoverEnd}
-        />
-
-        {/* Official Signature Watermark (Fixed at bottom right across all scroll phases) */}
-        <OfficialSignatureWatermark
-          onHoverAction={handleHoverAction}
-          onHoverEnd={handleHoverEnd}
-        />
       </div>
+
+      {/* Persistent Back to Top Button (Firmly locked to viewport, outside transformed parent) */}
+      <BackToTopButton
+        onHoverAction={handleHoverAction}
+        onHoverEnd={handleHoverEnd}
+      />
+
+      {/* Official Signature Watermark (Firmly locked to bottom-right of viewport on all scroll phases) */}
+      <OfficialSignatureWatermark
+        onHoverAction={handleHoverAction}
+        onHoverEnd={handleHoverEnd}
+      />
 
       {/* Interactive Case Study Modal Overlay */}
       <ProjectModal
         project={selectedProject}
-        onClose={() => setSelectedProject(null)}
+        onClose={() => {
+          if (selectedProject) {
+            trackModalClose('project_detail', { projectId: selectedProject.id });
+          }
+          setSelectedProject(null);
+        }}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
       />
@@ -280,7 +308,10 @@ export default function App() {
       {/* Interactive Resume Modal Overlay */}
       <ResumeModal
         isOpen={resumeOpen}
-        onClose={() => setResumeOpen(false)}
+        onClose={() => {
+          trackModalClose('resume_modal');
+          setResumeOpen(false);
+        }}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
       />
@@ -288,7 +319,10 @@ export default function App() {
       {/* Interactive Talk To Him Modal Overlay */}
       <TalkToHimModal
         isOpen={talkToHimOpen}
-        onClose={() => setTalkToHimOpen(false)}
+        onClose={() => {
+          trackModalClose('talk_to_him');
+          setTalkToHimOpen(false);
+        }}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
       />
@@ -296,7 +330,10 @@ export default function App() {
       {/* Recruiter & Visitor Auth Hub (Google Auth + Firestore Persistence) */}
       <AuthProfileModal
         isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
+        onClose={() => {
+          trackModalClose('auth_hub');
+          setAuthModalOpen(false);
+        }}
         onHoverAction={handleHoverAction}
         onHoverEnd={handleHoverEnd}
       />
@@ -304,13 +341,19 @@ export default function App() {
       {/* Terms & Conditions Modal Overlay */}
       <TermsAndConditionsModal
         isOpen={termsOpen}
-        onClose={() => setTermsOpen(false)}
+        onClose={() => {
+          trackModalClose('terms_conditions');
+          setTermsOpen(false);
+        }}
       />
 
       {/* Privacy Policy Modal Overlay */}
       <PrivacyPolicyModal
         isOpen={privacyOpen}
-        onClose={() => setPrivacyOpen(false)}
+        onClose={() => {
+          trackModalClose('privacy_policy');
+          setPrivacyOpen(false);
+        }}
       />
     </div>
   );

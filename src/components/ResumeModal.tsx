@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { PERSONAL_INFO, EXPERIENCES, CERTIFICATES } from '../data/portfolioData';
 import { generateClientResumePDF } from '../utils/resumeGenerator';
+import { trackResumeDownload } from '../services/analyticsService';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
 
   const handleDownload = () => {
     setDownloading(true);
+    trackResumeDownload(customPdfUrl ? 'custom_uploaded' : 'standard_pdf');
 
     try {
       if (customPdfUrl) {

@@ -7,6 +7,7 @@ import { HoloTiltCard } from './HoloTiltCard';
 import { ProjectLikeButton } from './ProjectLikeButton';
 import { ProjectBookmarkButton } from './ProjectBookmarkButton';
 import { useLanguage } from '../context/LanguageContext';
+import { trackFilterToggle } from '../services/analyticsService';
 
 interface ProjectsShowcaseProps {
   onSelectProject: (project: Project) => void;
@@ -58,12 +59,11 @@ export const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({
   const filteredProjects = PROJECTS.filter((p) => matchesCategory(p, activeCategory));
 
   const handleCategoryToggle = (cat: ProjectCategory) => {
-    if (activeCategory === cat && cat !== 'ALL') {
-      setActiveCategory('ALL');
-    } else {
-      setActiveCategory(cat);
-    }
+    const nextCat = activeCategory === cat && cat !== 'ALL' ? 'ALL' : cat;
+    setActiveCategory(nextCat);
     setActiveProjectIndex(0);
+    const count = getCategoryCount(nextCat);
+    trackFilterToggle(nextCat, count);
   };
 
   const getCategoryCount = (cat: ProjectCategory) => {

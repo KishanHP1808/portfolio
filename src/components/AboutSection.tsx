@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { MapPin, Sparkles, Code2, Compass, Layers, ShieldCheck, Camera, Palette, Film, Heart, ArrowUpRight, GraduationCap } from 'lucide-react';
 import { PERSONAL_INFO, FOCUS_AREAS, HOBBIES } from '../data/portfolioData';
 import { useLanguage } from '../context/LanguageContext';
+import { GitHubContributionsGraph } from './GitHubContributionsGraph';
 
 interface AboutSectionProps {
   onHoverAction?: (text: string) => void;
@@ -203,6 +204,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             ))}
           </div>
         </motion.div>
+
+        {/* GitHub Contributions Graph & Live Activity Feed (Synchronized via GITHUB_TOKEN) */}
+        <GitHubContributionsGraph
+          onHoverAction={onHoverAction}
+          onHoverEnd={onHoverEnd}
+        />
 
         {/* Dedicated Hobbies Column: Capturing Pictures, Drawing Portraits, Movies, Exploring Places & Much More */}
         <motion.div

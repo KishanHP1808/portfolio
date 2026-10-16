@@ -7,6 +7,7 @@ import { generateClientResumePDF } from '../utils/resumeGenerator';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { trackButtonClick } from '../services/analyticsService';
 
 interface NavbarProps {
   onHoverAction?: (text: string) => void;
@@ -236,7 +237,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Language Toggle Feature (English <-> Kannada) */}
             <button
               id="header-language-toggle-btn"
-              onClick={toggleLanguage}
+              onClick={() => {
+                trackButtonClick('navbar_toggle_language', { targetLang: language === 'en' ? 'kn' : 'en' });
+                toggleLanguage();
+              }}
               onMouseEnter={() => onHoverAction?.(language === 'en' ? 'ಕನ್ನಡ' : 'ENGLISH')}
               onMouseLeave={onHoverEnd}
               className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-[#00f0ff]/30 hover:border-[#00f0ff] bg-black/40 hover:bg-[#00f0ff]/15 text-neutral-200 hover:text-white transition-all duration-300 font-mono text-[11px] sm:text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.12)] group"
@@ -254,7 +258,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Theme Toggle Feature (Dark Mode <-> High-Contrast Light Mode) */}
             <button
               id="header-theme-toggle-btn"
-              onClick={toggleTheme}
+              onClick={() => {
+                trackButtonClick('navbar_toggle_theme', { targetTheme: isDark ? 'light' : 'dark' });
+                toggleTheme();
+              }}
               onMouseEnter={() => onHoverAction?.(isDark ? 'LIGHT MODE' : 'DARK MODE')}
               onMouseLeave={onHoverEnd}
               className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-[#00f0ff]/30 hover:border-[#00f0ff] bg-black/40 hover:bg-[#00f0ff]/15 text-neutral-200 hover:text-white transition-all duration-300 font-mono text-[11px] sm:text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.12)] group"
@@ -282,6 +289,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="header-auth-btn"
               onClick={() => {
+                trackButtonClick('navbar_auth_hub_btn');
                 if (onOpenAuthModal) onOpenAuthModal();
                 window.dispatchEvent(new CustomEvent('open-auth-modal'));
               }}

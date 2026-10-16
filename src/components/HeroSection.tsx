@@ -5,6 +5,7 @@ import { PERSONAL_INFO } from '../data/portfolioData';
 import { FoggyGlassName } from './FoggyGlassName';
 import { JarvisConsole } from './JarvisConsole';
 import { useLanguage } from '../context/LanguageContext';
+import { trackButtonClick } from '../services/analyticsService';
 
 interface HeroSectionProps {
   onHoverAction?: (text: string) => void;
@@ -137,7 +138,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 w-full">
               <button
                 id="hero-explore-btn"
-                onClick={scrollToWork}
+                onClick={() => {
+                  trackButtonClick('hero_explore_work');
+                  scrollToWork();
+                }}
                 onMouseEnter={() => onHoverAction?.('WORK')}
                 onMouseLeave={onHoverEnd}
                 className="group flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2 sm:py-3.5 rounded-full bg-white text-black font-condensed tracking-wider uppercase text-xs sm:text-sm font-bold hover:bg-[#00f0ff] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] cursor-pointer"
@@ -148,7 +152,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               <button
                 id="hero-contact-btn"
-                onClick={onOpenContact}
+                onClick={() => {
+                  trackButtonClick('hero_get_in_touch');
+                  if (onOpenContact) onOpenContact();
+                }}
                 onMouseEnter={() => onHoverAction?.('EMAIL')}
                 onMouseLeave={onHoverEnd}
                 className="flex items-center justify-center px-3.5 xs:px-4 sm:px-6 py-2 sm:py-3.5 rounded-full border border-white/20 bg-black/40 hover:border-[#00f0ff] hover:text-[#00f0ff] text-white font-condensed tracking-wider uppercase text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer"
@@ -159,6 +166,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 id="hero-talk-to-him-btn"
                 onClick={() => {
+                  trackButtonClick('hero_talk_to_him');
                   if (onOpenTalkToHim) onOpenTalkToHim();
                   window.dispatchEvent(new CustomEvent('open-talk-to-him'));
                   window.dispatchEvent(new CustomEvent('open-talk-together'));
@@ -175,6 +183,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 id="hero-resume-btn"
                 onClick={() => {
+                  trackButtonClick('hero_download_resume');
                   if (onOpenResume) onOpenResume();
                   window.dispatchEvent(new CustomEvent('open-resume'));
                 }}
@@ -189,6 +198,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 id="hero-thunder-btn"
                 onClick={() => {
+                  trackButtonClick('hero_unleash_thunder');
                   window.dispatchEvent(
                     new CustomEvent('unleash-thunder', {
                       detail: {
