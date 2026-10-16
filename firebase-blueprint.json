@@ -220,6 +220,21 @@
           "maxLength": 300,
           "description": "Public Google Cloud Skills Boost profile URL"
         },
+        "arcadeMilestone": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Arcade milestone status e.g. Tier 3 Champion"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Sync mechanism (google_api, profile_scraper, firestore, server_cache)"
+        },
+        "lastSyncedAt": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Timestamp of last live polling sync"
+        },
         "recentBadges": {
           "type": "array",
           "items": { "type": "string" },

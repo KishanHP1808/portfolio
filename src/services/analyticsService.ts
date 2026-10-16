@@ -1,4 +1,4 @@
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export type AnalyticsEventType =
@@ -172,4 +172,181 @@ export function trackExternalLink(label: string, destinationUrl: string): void {
     target: label,
     metadata: { destinationUrl: destinationUrl.slice(0, 200) },
   });
+}
+
+/**
+ * Interface representing the synchronized Google Cloud Skills Boost / Arcade accreditation profile.
+ */
+export interface GoogleSkillsProfileData {
+  accountEmail: string;
+  totalPoints: number;
+  tier: string;
+  skillBadgesCount: number;
+  questsCompleted: number;
+  labsCompleted: number;
+  arcadeMilestone?: string;
+  profileUrl?: string;
+  source?: string;
+  lastSyncedAt?: string;
+  recentBadges?: Array<{
+    name: string;
+    icon?: string;
+    earnedDate?: string;
+    category?: string;
+  }>;
+  updatedAt: string;
+}
+
+/**
+ * Result returned from a Google Skills sync operation.
+ */
+export interface GoogleSkillsSyncResult {
+  success: boolean;
+  data: GoogleSkillsProfileData;
+  pointsDelta: number;
+  source: string;
+  timestamp: string;
+  error?: string;
+}
+
+/**
+ * Service layer function to integrate with Google API / profile scraper endpoint
+ * to periodically fetch and update the points for the 4mn24ci023@gmail.com account.
+ * Persists the live score to Firestore, logs telemetry, and broadcasts sync events.
+ */
+export async function fetchAndUpdateGoogleSkillsPoints(
+  accountEmail: string = '4mn24ci023@gmail.com',
+  options?: {
+    forceRefresh?: boolean;
+    profileUrl?: string;
+    forceScrape?: boolean;
+  }
+): Promise<GoogleSkillsSyncResult> {
+  const accountDocId = '4mn24ci023';
+  const firestoreRef = doc(db, 'google_skills', accountDocId);
+
+  // 1. Check existing Firestore baseline to calculate points progression delta
+  let previousPoints = 0;
+  try {
+    const existingSnap = await getDoc(firestoreRef);
+    if (existingSnap.exists()) {
+      const existingData = existingSnap.data() as Partial<GoogleSkillsProfileData>;
+      previousPoints = existingData.totalPoints || 0;
+    }
+  } catch {
+    // Non-fatal fallback
+  }
+
+  try {
+    // 2. Fetch or trigger scrape from backend proxy endpoint
+    const queryParams = new URLSearchParams();
+    if (options?.forceRefresh) queryParams.set('refresh', 'true');
+    if (options?.profileUrl) queryParams.set('profileUrl', options.profileUrl);
+
+    const endpointUrl = `/api/google-skills${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await fetch(endpointUrl, {
+      method: options?.forceScrape ? 'POST' : 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      ...(options?.forceScrape
+        ? {
+            body: JSON.stringify({
+              accountEmail,
+              profileUrl: options?.profileUrl,
+              forceScrape: true,
+            }),
+          }
+        : {}),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to synchronize Google skills`);
+    }
+
+    const payload = await response.json();
+    const profile: GoogleSkillsProfileData = payload.profile || payload;
+
+    // Ensure accountEmail matches
+    profile.accountEmail = accountEmail;
+    profile.lastSyncedAt = new Date().toISOString();
+
+    const pointsDelta = previousPoints > 0 ? profile.totalPoints - previousPoints : 0;
+
+    // 3. Persist latest points & status to Firestore document
+    const firestorePayload = {
+      accountEmail: profile.accountEmail,
+      totalPoints: profile.totalPoints,
+      tier: profile.tier || 'Google Cloud Arcade Legend // Gold Architect',
+      skillBadgesCount: profile.skillBadgesCount || 0,
+      questsCompleted: profile.questsCompleted || 0,
+      labsCompleted: profile.labsCompleted || 0,
+      ...(profile.arcadeMilestone ? { arcadeMilestone: profile.arcadeMilestone } : {}),
+      ...(profile.profileUrl ? { profileUrl: profile.profileUrl } : {}),
+      source: profile.source || 'profile_scraper',
+      ...(profile.recentBadges ? { recentBadges: profile.recentBadges } : {}),
+      lastSyncedAt: profile.lastSyncedAt,
+      updatedAt: profile.updatedAt || new Date().toISOString(),
+    };
+
+    await setDoc(firestoreRef, firestorePayload, { merge: true });
+
+    // 4. Log telemetry event for portfolio performance analysis
+    trackEvent({
+      eventType: 'button_click',
+      eventName: 'google_skills_auto_refreshed',
+      category: 'skills_sync',
+      target: accountEmail,
+      metadata: {
+        points: profile.totalPoints,
+        delta: pointsDelta,
+        badges: profile.skillBadgesCount,
+        source: profile.source || 'server_sync',
+      },
+    });
+
+    const result: GoogleSkillsSyncResult = {
+      success: true,
+      data: profile,
+      pointsDelta,
+      source: profile.source || 'server_sync',
+      timestamp: profile.lastSyncedAt,
+    };
+
+    // 5. Broadcast custom event to notify all active UI components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('google-skills-synced', {
+          detail: result,
+        })
+      );
+    }
+
+    return result;
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.warn('Google skills points sync notice:', error.message);
+
+    // Fallback: Return current Firestore data if available
+    const fallbackProfile: GoogleSkillsProfileData = {
+      accountEmail,
+      totalPoints: previousPoints || 2850,
+      tier: 'Google Cloud Arcade Legend // Gold Architect',
+      skillBadgesCount: 24,
+      questsCompleted: 16,
+      labsCompleted: 98,
+      updatedAt: new Date().toISOString(),
+      source: 'firestore_fallback',
+    };
+
+    return {
+      success: false,
+      data: fallbackProfile,
+      pointsDelta: 0,
+      source: 'firestore_fallback',
+      timestamp: new Date().toISOString(),
+      error: error.message,
+    };
+  }
 }

@@ -91,7 +91,10 @@ service cloud.firestore {
         && (!('skillBadgesCount' in data) || (data.skillBadgesCount is number && data.skillBadgesCount >= 0))
         && (!('questsCompleted' in data) || (data.questsCompleted is number && data.questsCompleted >= 0))
         && (!('labsCompleted' in data) || (data.labsCompleted is number && data.labsCompleted >= 0))
+        && (!('arcadeMilestone' in data) || (data.arcadeMilestone is string && data.arcadeMilestone.size() <= 128))
         && (!('profileUrl' in data) || (data.profileUrl is string && data.profileUrl.size() <= 300))
+        && (!('source' in data) || (data.source is string && data.source.size() <= 64))
+        && (!('lastSyncedAt' in data) || (data.lastSyncedAt is string && data.lastSyncedAt.size() <= 64))
         && (!('recentBadges' in data) || data.recentBadges is list);
     }
 

@@ -22,7 +22,8 @@ import {
 } from 'lucide-react';
 import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { trackButtonClick, trackEvent } from '../services/analyticsService';
+import { trackButtonClick, trackEvent, fetchAndUpdateGoogleSkillsPoints } from '../services/analyticsService';
+import { GoogleSkillsAutoRefreshTicker } from './GoogleSkillsAutoRefreshTicker';
 
 export interface GoogleBadge {
   name: string;
@@ -323,8 +324,31 @@ export const GoogleSkillsProfileCard: React.FC<GoogleSkillsProfileCardProps> = (
           </div>
         </div>
 
+        {/* Live Auto-Refresh Ticker & Polling Telemetry Controller */}
+        <div className="relative z-10 my-6">
+          <GoogleSkillsAutoRefreshTicker
+            initialPoints={data.totalPoints}
+            accountEmail={data.accountEmail}
+            defaultIntervalSeconds={60}
+            onPointsUpdate={(newPoints, profile) => {
+              setData((prev) => ({
+                ...prev,
+                totalPoints: newPoints,
+                skillBadgesCount: profile.skillBadgesCount || prev.skillBadgesCount,
+                questsCompleted: profile.questsCompleted || prev.questsCompleted,
+                labsCompleted: profile.labsCompleted || prev.labsCompleted,
+                tier: profile.tier || prev.tier,
+                recentBadges: (profile.recentBadges as GoogleBadge[]) || prev.recentBadges,
+                updatedAt: profile.updatedAt || new Date().toISOString(),
+              }));
+            }}
+            onHoverAction={onHoverAction}
+            onHoverEnd={onHoverEnd}
+          />
+        </div>
+
         {/* Central Stat Counters: Colossal Points Counter */}
-        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 my-8">
+        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {/* HUGE ARCADE POINTS */}
           <div className="p-5 sm:p-6 rounded-2xl border border-white/10 bg-white/[0.02] relative overflow-hidden group hover:border-[#FBBC05]/60 hover:bg-[#FBBC05]/[0.02] transition-all">
             <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-2">

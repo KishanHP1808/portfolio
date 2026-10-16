@@ -972,8 +972,150 @@ let googleSkillsData: GoogleSkillsState = {
   updatedAt: new Date().toISOString(),
 };
 
-app.get('/api/google-skills', (_req, res) => {
-  return res.json(googleSkillsData);
+// Rate limiter for periodic Google Skills polling & scraping
+const googleSkillsRateLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 60,
+  prefix: 'gskills',
+  errorMessage: 'Google skills polling limit reached. Please wait a moment.',
+});
+
+// Profile scraper to fetch live points and badge telemetry from public Google Skills Boost profile
+async function scrapeGoogleSkillsProfile(url: string, email: string): Promise<{
+  scraped: boolean;
+  points?: number;
+  badgesCount?: number;
+  questsCount?: number;
+  recentBadges?: Array<{ name: string; icon: string; earnedDate: string; category: string }>;
+}> {
+  try {
+    if (!url || !url.startsWith('http')) {
+      return { scraped: false };
+    }
+
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    };
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const response = await fetch(url, { headers, signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return { scraped: false };
+    }
+
+    const html = await response.text();
+
+    // 1. Extract points (e.g., "2,850 Points", "Arcade Points: 2850", or "<span class='ql-points'>2850</span>")
+    let parsedPoints: number | undefined;
+    const pointsMatch = html.match(/(\d[\d,]*)\s*(?:Arcade\s*)?Points?/i) || html.match(/arcade-points["'>\s:]*(\d[\d,]*)/i);
+    if (pointsMatch && pointsMatch[1]) {
+      const cleanNum = parseInt(pointsMatch[1].replace(/,/g, ''), 10);
+      if (!isNaN(cleanNum) && cleanNum > 0) {
+        parsedPoints = cleanNum;
+      }
+    }
+
+    // 2. Extract badges count (e.g. "24 Badges" or number of badge elements)
+    let parsedBadgesCount: number | undefined;
+    const badgesMatch = html.match(/(\d+)\s*(?:Skill\s*)?Badges?/i);
+    if (badgesMatch && badgesMatch[1]) {
+      parsedBadgesCount = parseInt(badgesMatch[1], 10);
+    } else {
+      const badgeElementsCount = (html.match(/class=["'][^"']*ql-badge[^"']*["']/gi) || []).length;
+      if (badgeElementsCount > 0) parsedBadgesCount = badgeElementsCount;
+    }
+
+    // 3. Extract Quests count
+    let parsedQuestsCount: number | undefined;
+    const questsMatch = html.match(/(\d+)\s*Quests?/i);
+    if (questsMatch && questsMatch[1]) {
+      parsedQuestsCount = parseInt(questsMatch[1], 10);
+    }
+
+    return {
+      scraped: Boolean(parsedPoints || parsedBadgesCount),
+      points: parsedPoints,
+      badgesCount: parsedBadgesCount,
+      questsCount: parsedQuestsCount,
+    };
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.warn('Google skills scraper notice (using fallback):', error.message);
+    return { scraped: false };
+  }
+}
+
+app.get('/api/google-skills', googleSkillsRateLimiter, async (req, res) => {
+  try {
+    const forceRefresh = req.query.refresh === 'true';
+    const profileUrl = typeof req.query.profileUrl === 'string' ? req.query.profileUrl : googleSkillsData.profileUrl;
+
+    if (forceRefresh && profileUrl) {
+      const scrapeResult = await scrapeGoogleSkillsProfile(profileUrl, googleSkillsData.accountEmail);
+      if (scrapeResult.scraped) {
+        if (scrapeResult.points && scrapeResult.points > 0) {
+          googleSkillsData.totalPoints = scrapeResult.points;
+        }
+        if (scrapeResult.badgesCount && scrapeResult.badgesCount > 0) {
+          googleSkillsData.skillBadgesCount = scrapeResult.badgesCount;
+        }
+        if (scrapeResult.questsCount && scrapeResult.questsCount > 0) {
+          googleSkillsData.questsCompleted = scrapeResult.questsCount;
+        }
+        googleSkillsData.updatedAt = new Date().toISOString();
+        return res.json({
+          ...googleSkillsData,
+          source: 'profile_scraper',
+          lastSyncedAt: new Date().toISOString(),
+        });
+      }
+    }
+
+    return res.json({
+      ...googleSkillsData,
+      source: 'server_cache',
+      lastSyncedAt: new Date().toISOString(),
+    });
+  } catch {
+    return res.json(googleSkillsData);
+  }
+});
+
+app.post('/api/google-skills/sync', googleSkillsRateLimiter, async (req, res) => {
+  try {
+    const { accountEmail, profileUrl, forceScrape } = req.body || {};
+    const targetUrl = profileUrl || googleSkillsData.profileUrl;
+
+    let source = 'server_sync';
+    if (forceScrape && targetUrl) {
+      const scrapeRes = await scrapeGoogleSkillsProfile(targetUrl, accountEmail || googleSkillsData.accountEmail);
+      if (scrapeRes.scraped) {
+        source = 'profile_scraper';
+        if (scrapeRes.points) googleSkillsData.totalPoints = scrapeRes.points;
+        if (scrapeRes.badgesCount) googleSkillsData.skillBadgesCount = scrapeRes.badgesCount;
+        if (scrapeRes.questsCount) googleSkillsData.questsCompleted = scrapeRes.questsCount;
+      }
+    }
+
+    googleSkillsData.updatedAt = new Date().toISOString();
+
+    return res.json({
+      success: true,
+      profile: {
+        ...googleSkillsData,
+        source,
+        lastSyncedAt: new Date().toISOString(),
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    return res.json({ success: true, profile: googleSkillsData, timestamp: new Date().toISOString() });
+  }
 });
 
 app.post('/api/google-skills/upgrade', (req, res) => {
