@@ -61,7 +61,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 // Validate connection on initial load
 export async function testConnection() {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    await getDocFromServer(doc(db, 'project_likes', 'agri-guard'));
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
       console.error('Please check your Firebase configuration.');

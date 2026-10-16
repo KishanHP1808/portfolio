@@ -124,9 +124,16 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                 </div>
               </div>
 
-              {/* Bottom Card Footer */}
-              <div className="relative z-10 pt-6 border-t border-white/10 flex items-center justify-between">
+              {/* Bottom Card Footer with Official Autograph */}
+              <div className="relative z-10 pt-6 border-t border-white/10 flex items-end justify-between">
                 <div>
+                  <div className="w-28 h-10 mb-2 opacity-85">
+                    <img
+                      src="/signature.svg"
+                      alt="Kishan H.P Signature"
+                      className="h-full w-auto object-contain filter invert dark:invert-0 drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]"
+                    />
+                  </div>
                   <div className="font-condensed text-lg text-white font-bold tracking-wide">
                     {PERSONAL_INFO.name}
                   </div>

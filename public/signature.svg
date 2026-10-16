@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" fill="none" stroke="currentColor">
+  <!-- Official Autograph: Kishan H.P -->
+  <g id="signature-strokes" stroke-linecap="round" stroke-linejoin="round">
+    <!-- "K" Main Stem -->
+    <path d="M 52 48 C 50 68, 47 98, 45 138" stroke-width="4.2" />
+    <path d="M 49 50 C 47 52, 43 56, 40 60" stroke-width="2.8" />
+    
+    <!-- "K" Upper Arm and Loop -->
+    <path d="M 80 72 C 72 82, 60 92, 50 96 C 47 97, 46 95, 48 93 C 54 88, 66 84, 76 80" stroke-width="3.6" />
+    
+    <!-- "K" Lower Leg connecting to "i" -->
+    <path d="M 52 96 C 60 106, 72 124, 82 134 C 88 140, 94 138, 98 128" stroke-width="3.8" />
+    
+    <!-- "i" Stem -->
+    <path d="M 98 128 C 102 114, 107 98, 110 88 C 111 86, 112 88, 111 92 C 108 108, 107 122, 112 128 C 114 130, 118 130, 122 124" stroke-width="3.6" />
+    <!-- "i" Dot -->
+    <circle cx="114" cy="74" r="2.8" fill="currentColor" stroke="none" />
+    
+    <!-- "s" Loop and Belly -->
+    <path d="M 122 124 C 128 114, 134 98, 137 92 C 139 88, 142 90, 140 94 C 136 102, 132 110, 134 116 C 136 122, 144 120, 148 114" stroke-width="3.5" />
+    
+    <!-- "h" Ascender and Arch -->
+    <path d="M 148 114 C 154 100, 164 68, 170 42 C 172 37, 174 38, 172 44 C 168 68, 162 104, 159 130 C 164 112, 172 98, 182 96 C 188 95, 192 100, 190 108 C 187 118, 185 125, 190 126 C 193 127, 197 122, 202 116" stroke-width="3.8" />
+    
+    <!-- "a" Loop and Right Downstroke -->
+    <path d="M 204 114 C 200 106, 194 105, 188 110 C 183 115, 182 122, 186 126 C 190 130, 198 128, 204 118 C 206 114, 207 110, 207 116 C 206 122, 206 126, 210 126 C 213 126, 217 120, 222 112" stroke-width="3.4" />
+    
+    <!-- "n" Double Hump & Sharp Upward Slanted Exit Tail -->
+    <path d="M 222 112 C 226 104, 230 101, 234 106 C 235 108, 234 114, 233 122 C 238 112, 244 102, 249 104 C 253 105, 254 110, 252 118 C 250 124, 252 125, 258 122 C 265 118, 274 110, 280 104" stroke-width="3.6" />
+    
+    <!-- "H" Left Stem -->
+    <path d="M 238 66 C 237 76, 235 88, 233 100" stroke-width="3.5" />
+    <!-- "H" Right Stem -->
+    <path d="M 254 58 C 253 70, 251 82, 249 94" stroke-width="3.5" />
+    <!-- "H" Crossbar -->
+    <path d="M 235 84 C 242 82, 248 80, 253 77" stroke-width="3.0" />
+    
+    <!-- "." Period Dot -->
+    <circle cx="260" cy="92" r="2.4" fill="currentColor" stroke="none" />
+    
+    <!-- "P" Stem and Upper Loop -->
+    <path d="M 270 48 C 268 62, 266 78, 263 94" stroke-width="3.6" />
+    <path d="M 269 50 C 278 48, 288 50, 292 56 C 295 62, 293 70, 286 74 C 279 78, 271 78, 266 76" stroke-width="3.4" />
+  </g>
+</svg>

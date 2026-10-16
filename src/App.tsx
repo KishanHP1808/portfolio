@@ -16,6 +16,7 @@ import { ContactSection } from './components/ContactSection';
 import { FloatingWavePlayer } from './components/FloatingWavePlayer';
 import { FloatingBackNavigator } from './components/FloatingBackNavigator';
 import { BackToTopButton } from './components/BackToTopButton';
+import { OfficialSignatureWatermark } from './components/OfficialSignatureWatermark';
 import { ElectricThunderCanvas } from './components/ElectricThunderCanvas';
 import { ElectricCursorTrail } from './components/ElectricCursorTrail';
 import { TermsAndConditionsModal } from './components/TermsAndConditionsModal';
@@ -257,6 +258,12 @@ export default function App() {
 
         {/* Persistent Back to Top Button (Appears past HeroSection) */}
         <BackToTopButton
+          onHoverAction={handleHoverAction}
+          onHoverEnd={handleHoverEnd}
+        />
+
+        {/* Official Signature Watermark (Fixed at bottom right across all scroll phases) */}
+        <OfficialSignatureWatermark
           onHoverAction={handleHoverAction}
           onHoverEnd={handleHoverEnd}
         />
