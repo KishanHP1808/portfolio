@@ -183,6 +183,55 @@
         }
       },
       "required": ["eventType", "eventName", "timestamp"]
+    },
+    "google_skills_profile": {
+      "title": "Google Skills Profile",
+      "description": "Accreditation and points tracker for Google Cloud Skills Boost / Qwiklabs account (4mn24ci023@gmail.com)",
+      "type": "object",
+      "properties": {
+        "accountEmail": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Google Skills account email (4mn24ci023@gmail.com)"
+        },
+        "totalPoints": {
+          "type": "number",
+          "description": "Accumulated Google Skills / Arcade points"
+        },
+        "tier": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Skill tier or ranking title"
+        },
+        "skillBadgesCount": {
+          "type": "number",
+          "description": "Count of official Google Cloud skill badges earned"
+        },
+        "questsCompleted": {
+          "type": "number",
+          "description": "Count of learning quests completed"
+        },
+        "labsCompleted": {
+          "type": "number",
+          "description": "Count of hands-on cloud labs completed"
+        },
+        "profileUrl": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Public Google Cloud Skills Boost profile URL"
+        },
+        "recentBadges": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of recently earned Google Cloud skill badges"
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "ISO timestamp of last skill upgrade"
+        }
+      },
+      "required": ["accountEmail", "totalPoints", "updatedAt"]
     }
   },
   "firestore": {
@@ -205,6 +254,10 @@
     "/analytics_events/{eventId}": {
       "schema": "analytics_event",
       "description": "Write-only telemetry log of visitor interactions"
+    },
+    "/google_skills/{skillId}": {
+      "schema": "google_skills_profile",
+      "description": "Upgradable Google Skills Boost points and badges for 4mn24ci023@gmail.com"
     }
   }
 }

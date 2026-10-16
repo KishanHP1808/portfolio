@@ -81,6 +81,20 @@ service cloud.firestore {
         && (!('metadata' in data) || data.metadata is map);
     }
 
+    // Validation for Google Skills Profile Accreditation (4mn24ci023@gmail.com)
+    function isValidGoogleSkills(data) {
+      return data.keys().hasAll(['accountEmail', 'totalPoints', 'updatedAt'])
+        && data.accountEmail is string && data.accountEmail.size() <= 128
+        && data.totalPoints is number && data.totalPoints >= 0
+        && data.updatedAt is string && data.updatedAt.size() <= 64
+        && (!('tier' in data) || (data.tier is string && data.tier.size() <= 128))
+        && (!('skillBadgesCount' in data) || (data.skillBadgesCount is number && data.skillBadgesCount >= 0))
+        && (!('questsCompleted' in data) || (data.questsCompleted is number && data.questsCompleted >= 0))
+        && (!('labsCompleted' in data) || (data.labsCompleted is number && data.labsCompleted >= 0))
+        && (!('profileUrl' in data) || (data.profileUrl is string && data.profileUrl.size() <= 300))
+        && (!('recentBadges' in data) || data.recentBadges is list);
+    }
+
     // User Profiles: Private to authenticated owner with strict schema verification
     match /users/{userId} {
       allow read: if isOwner(userId);
@@ -120,6 +134,13 @@ service cloud.firestore {
     match /analytics_events/{eventId} {
       allow create: if isValidId(eventId) && isValidAnalyticsEvent(incoming());
       allow read, update, delete: if false;
+    }
+
+    // Google Skills Profile: Publicly readable, upgradable with verified schema
+    match /google_skills/{skillId} {
+      allow read: if true;
+      allow create, update: if isValidId(skillId) && isValidGoogleSkills(incoming());
+      allow delete: if false;
     }
   }
 }

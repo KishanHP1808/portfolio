@@ -4,6 +4,7 @@ import { MapPin, Sparkles, Code2, Compass, Layers, ShieldCheck, Camera, Palette,
 import { PERSONAL_INFO, FOCUS_AREAS, HOBBIES } from '../data/portfolioData';
 import { useLanguage } from '../context/LanguageContext';
 import { GitHubContributionsGraph } from './GitHubContributionsGraph';
+import { GoogleSkillsProfileCard } from './GoogleSkillsProfileCard';
 
 interface AboutSectionProps {
   onHoverAction?: (text: string) => void;
@@ -207,6 +208,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
 
         {/* GitHub Contributions Graph & Live Activity Feed (Synchronized via GITHUB_TOKEN) */}
         <GitHubContributionsGraph
+          onHoverAction={onHoverAction}
+          onHoverEnd={onHoverEnd}
+        />
+
+        {/* Google Cloud Skills Boost & Arcade Accreditation (4mn24ci023@gmail.com - Upgradable Live) */}
+        <GoogleSkillsProfileCard
           onHoverAction={onHoverAction}
           onHoverEnd={onHoverEnd}
         />

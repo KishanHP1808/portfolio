@@ -15,6 +15,7 @@ export const PERSONAL_INFO = {
   locationShort: "Mysuru, Karnataka",
   coordinates: "12.2958° N, 76.6394° E",
   email: "kishanhp18@gmail.com",
+  secondaryEmail: "4mn24ci023@gmail.com",
   phone: "8431926645",
   college: {
     name: "Maharaja Institute of Technology Tandavapura",
@@ -33,6 +34,7 @@ export const PERSONAL_INFO = {
     leetcodeUsername: "Kishan_HP",
     credly: "https://www.credly.com/users/kishan-h-p",
     credlyAlt: "https://www.credly.com/users/kishan-h-p.a82b9747",
+    googleSkills: "https://www.cloudskillsboost.google/public_profiles/4mn24ci023",
     googleDriveCertificates: "https://drive.google.com/drive/folders/1RqCIJMREGOfOVoxlt33iGVFRvRwHIpnZ?usp=drive_link"
   }
 };

@@ -930,6 +930,91 @@ app.get('/api/github-stats', githubRateLimiter, async (req, res) => {
   }
 });
 
+/**
+ * Google Cloud Skills Boost / Arcade Accreditation Profile
+ * Account: 4mn24ci023@gmail.com
+ */
+interface GoogleSkillsState {
+  accountEmail: string;
+  totalPoints: number;
+  tier: string;
+  skillBadgesCount: number;
+  questsCompleted: number;
+  labsCompleted: number;
+  arcadeMilestone: string;
+  profileUrl: string;
+  recentBadges: Array<{
+    name: string;
+    icon: string;
+    earnedDate: string;
+    category: string;
+  }>;
+  updatedAt: string;
+}
+
+let googleSkillsData: GoogleSkillsState = {
+  accountEmail: '4mn24ci023@gmail.com',
+  totalPoints: 2850,
+  tier: 'Google Cloud Arcade Legend // Gold Architect',
+  skillBadgesCount: 24,
+  questsCompleted: 16,
+  labsCompleted: 98,
+  arcadeMilestone: 'Tier 3 Champion - Elite Finisher',
+  profileUrl: 'https://www.cloudskillsboost.google/public_profiles/4mn24ci023',
+  recentBadges: [
+    { name: 'Generative AI Explorer - Vertex AI & Gemini', icon: 'Sparkles', earnedDate: 'Oct 2026', category: 'AI & ML' },
+    { name: 'Build and Secure Networks in Google Cloud', icon: 'ShieldCheck', earnedDate: 'Sep 2026', category: 'Infrastructure' },
+    { name: 'Implement Cloud Security & IAM Governance', icon: 'Lock', earnedDate: 'Aug 2026', category: 'Security' },
+    { name: 'Serverless Cloud Run & Cloud Functions Deployments', icon: 'Zap', earnedDate: 'Jul 2026', category: 'Serverless' },
+    { name: 'Modern App Architecture with Kubernetes Engine (GKE)', icon: 'Cpu', earnedDate: 'Jun 2026', category: 'DevOps' },
+    { name: 'BigQuery Data Analytics & Predictive Big Lake', icon: 'Database', earnedDate: 'May 2026', category: 'Data & Analytics' },
+  ],
+  updatedAt: new Date().toISOString(),
+};
+
+app.get('/api/google-skills', (_req, res) => {
+  return res.json(googleSkillsData);
+});
+
+app.post('/api/google-skills/upgrade', (req, res) => {
+  try {
+    const { totalPoints, skillBadgesCount, questsCompleted, labsCompleted, tier, profileUrl, newBadgeName } = req.body;
+
+    if (typeof totalPoints === 'number' && totalPoints >= 0) {
+      googleSkillsData.totalPoints = totalPoints;
+    }
+    if (typeof skillBadgesCount === 'number' && skillBadgesCount >= 0) {
+      googleSkillsData.skillBadgesCount = skillBadgesCount;
+    }
+    if (typeof questsCompleted === 'number' && questsCompleted >= 0) {
+      googleSkillsData.questsCompleted = questsCompleted;
+    }
+    if (typeof labsCompleted === 'number' && labsCompleted >= 0) {
+      googleSkillsData.labsCompleted = labsCompleted;
+    }
+    if (typeof tier === 'string' && tier.trim()) {
+      googleSkillsData.tier = tier.trim();
+    }
+    if (typeof profileUrl === 'string' && profileUrl.trim()) {
+      googleSkillsData.profileUrl = profileUrl.trim();
+    }
+    if (typeof newBadgeName === 'string' && newBadgeName.trim()) {
+      googleSkillsData.recentBadges.unshift({
+        name: newBadgeName.trim(),
+        icon: 'Sparkles',
+        earnedDate: 'Just Now',
+        category: 'Skill Badge',
+      });
+      googleSkillsData.skillBadgesCount += 1;
+    }
+
+    googleSkillsData.updatedAt = new Date().toISOString();
+    return res.json({ success: true, profile: googleSkillsData });
+  } catch {
+    return res.status(500).json({ error: 'Failed to update Google skills profile' });
+  }
+});
+
 
 
 async function startServer() {
