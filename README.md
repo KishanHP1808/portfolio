@@ -11,7 +11,7 @@
   &nbsp; · &nbsp;
   <a href="mailto:kishanhp18@gmail.com"><strong>Email</strong></a>
 </p>
-https://kishan-hp-portfolio-bro.ai.studio/
+
 <p align="center">
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=111827" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
